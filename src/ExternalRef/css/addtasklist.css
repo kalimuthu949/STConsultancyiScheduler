@@ -1,0 +1,47 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.rowpadding {
+  color: white;
+  font-family: "Poppins", sans-serif;
+}
+.buttoncolor{
+    background-color: #f26c52;
+    color: white;
+}
+.ms-options-wrap>.ms-options>ul input[type=checkbox] {
+  left: 0px!important;
+    top: 13px !important;
+}
+
+.ms-options-wrap>.ms-options,.ms-options-wrap>button, .ms-options-wrap>button:focus { 
+	
+	color:black!important;
+  font-family: "Poppins", sans-serif;
+ 
+}
+.ms-options-wrap>button, .ms-options-wrap>button:focus {
+  color: black;
+  height: 38px;
+  border-radius: 3px;
+}
+.ms-options-wrap, .ms-options-wrap * {
+ 
+  list-style-type: none;
+}
+
+ 
+
+
+
+
+.buttoncolor:hover{
+    color: white !important;
+}
+#workbenchPageContent {
+    left: -30px !important;
+    max-width: 1364px !important;
+  }

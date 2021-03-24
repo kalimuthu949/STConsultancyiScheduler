@@ -1,0 +1,209 @@
+/*@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  background-color: #001738;
+  color: #f26c52;
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+}
+.Section {
+  font-size: 13px;
+  margin: 25px;
+}
+legend {
+  color: #f26c52;
+  margin-left: 20px;
+  padding: 5px;
+  font-size: 20px;
+  font-style: italic;
+  font-weight: 700;
+}
+fieldset {
+  border: 2px solid #f26c52;
+}
+label {
+  color: white;
+}
+.Container {
+  display: flex;
+  justify-content: space-between;
+  margin: 25px;
+}
+
+select {
+  width: 130px;
+  height: 23px;
+}
+input {
+  height: 21px;
+  width: 130px;
+  border: none;
+}
+.sname,
+.architecture {
+  width: 326px;
+}
+
+.Container1,
+.Container2 {
+  margin: 25px;
+  display: flex;
+  justify-content: space-between;
+}
+input.exsitingtechnology,
+.drawing {
+  width: 315px;
+}
+input.addedtechnology {
+  width: 514px;
+}
+input.remote,
+.saed {
+  width: 316px;
+}
+
+input.sow {
+  width: 325px;
+}
+.amendment {
+  width: 65vw;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #f26c52;
+  box-shadow: 0 0 3px #f26c52;
+  outline-offset: 0px;
+  border: none;
+}
+
+textarea {
+  width: 93vw;
+  max-width: 93vw !important;
+}*/
+* {
+  box-sizing: border-box;
+}
+
+.container
+{
+  display: flex;
+  flex-wrap: wrap;
+  /*border:2px solid #f26c52;*/
+  padding:10px;
+}
+
+.clsRowDiv {
+  display: flex;
+  flex-wrap: wrap;
+  border: 2px solid #f26c52;
+  width:100%;
+
+  margin-top:20px !important;
+}
+
+/* Create two equal columns that sits next to each other */
+.column 
+{
+  margin:14px;
+  padding:10px;
+}
+
+.Heading
+{
+  position: relative;
+  left: 40px;
+  height:40px;
+  font-size: 24px;
+  top: 45px;
+  background: rgb(0 38 62);
+}
+
+select {
+  width: 150px;
+  height: 25px;
+}
+select:focus {
+  min-width: 150px;
+  width: auto;
+  color:black;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px;
+}
+
+th {color:#f26c52;}
+
+td, th {
+  border: 1px solid #f26c52;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) 
+{
+  /*background-color: #f26c52;*/
+}
+
+button, input, select, textarea {
+  color: black;
+}
+/* ! workbench size Dont Forget to comment after works done */
+#workbenchPageContent {
+  left: -30px !important;
+  max-width: 1364px !important;
+}
+/* workbench size */
+
+/* For Spinners */
+.spinner-border {
+  /* display: inline-block; when show */
+
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  width: 5rem;
+  height: 5rem;
+  vertical-align: text-bottom;
+  border: 0.25em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  -webkit-animation: spinner-border 0.75s linear infinite;
+  animation: spinner-border 0.75s linear infinite;
+}
+.loading-modal {
+  background: rgba(0, 0, 0, 0.3);
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  text-align: center;
+  display: none;
+  z-index: 1000;
+}
+.loading-modal.active {
+  display: inline-block;
+}
+@-webkit-keyframes spinner-border {
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner-border {
+  to {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+/* For Spinners */

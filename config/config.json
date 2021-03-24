@@ -1,0 +1,66 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "add-task-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/addTask/AddTaskWebPart.js",
+          "manifest": "./src/webparts/addTask/AddTaskWebPart.manifest.json"
+        }
+      ]
+    },
+    "site-grid-view-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/siteGridView/SiteGridViewWebPart.js",
+          "manifest": "./src/webparts/siteGridView/SiteGridViewWebPart.manifest.json"
+        }
+      ]
+    },
+    "add-site-list-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/addSiteList/AddSiteListWebPart.js",
+          "manifest": "./src/webparts/addSiteList/AddSiteListWebPart.manifest.json"
+        }
+      ]
+    },
+    "add-job-details-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/addJobDetails/AddJobDetailsWebPart.js",
+          "manifest": "./src/webparts/addJobDetails/AddJobDetailsWebPart.manifest.json"
+        }
+      ]
+    },
+    "add-task-list-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/addTaskList/AddTaskListWebPart.js",
+          "manifest": "./src/webparts/addTaskList/AddTaskListWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {
+    "jquery": {
+      "path": "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js",
+      "globalName": "jquery"
+    },
+    "bootstrap": {
+      "path": "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js",
+      "globalName": "bootstrap",
+      "globalDependencies": [
+        "jquery"
+      ]
+    }
+  },
+  "localizedResources": {
+    "AddTaskWebPartStrings": "lib/webparts/addTask/loc/{locale}.js",
+    "SiteGridViewWebPartStrings": "lib/webparts/siteGridView/loc/{locale}.js",
+    "AddSiteListWebPartStrings": "lib/webparts/addSiteList/loc/{locale}.js",
+    "AddJobDetailsWebPartStrings": "lib/webparts/addJobDetails/loc/{locale}.js",
+    "AddTaskListWebPartStrings": "lib/webparts/addTaskList/loc/{locale}.js"
+  }
+}
