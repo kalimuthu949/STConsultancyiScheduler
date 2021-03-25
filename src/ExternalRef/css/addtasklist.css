@@ -12,16 +12,26 @@
     background-color: #f26c52;
     color: white;
 }
+
+
+                    /* overright css */
+
 .ms-options-wrap>.ms-options>ul input[type=checkbox] {
   left: 0px!important;
     top: 13px !important;
 }
 
-.ms-options-wrap>.ms-options,.ms-options-wrap>button, .ms-options-wrap>button:focus { 
-	
+.ms-options-wrap>.ms-options,.ms-options-wrap>button { 
 	color:black!important;
   font-family: "Poppins", sans-serif;
+  font-size: 1rem !important;
+  font-weight: 500;
  
+}
+.ms-options-wrap>button:focus
+{
+  color:black!important;
+  font-family: "Poppins", sans-serif;
 }
 .ms-options-wrap>button, .ms-options-wrap>button:focus {
   color: black;
@@ -29,18 +39,14 @@
   border-radius: 3px;
 }
 .ms-options-wrap, .ms-options-wrap * {
- 
   list-style-type: none;
 }
-
- 
-
-
-
-
 .buttoncolor:hover{
     color: white !important;
 }
+
+                            /* stworkbench */
+
 #workbenchPageContent {
     left: -30px !important;
     max-width: 1364px !important;
