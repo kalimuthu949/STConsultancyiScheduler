@@ -41,6 +41,22 @@
           "manifest": "./src/webparts/addTaskList/AddTaskListWebPart.manifest.json"
         }
       ]
+    },
+    "jobdetailsgrid-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/jobdetailsgrid/JobdetailsgridWebPart.js",
+          "manifest": "./src/webparts/jobdetailsgrid/JobdetailsgridWebPart.manifest.json"
+        }
+      ]
+    },
+    "configuration-grid-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/configurationGrid/ConfigurationGridWebPart.js",
+          "manifest": "./src/webparts/configurationGrid/ConfigurationGridWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -61,6 +77,8 @@
     "SiteGridViewWebPartStrings": "lib/webparts/siteGridView/loc/{locale}.js",
     "AddSiteListWebPartStrings": "lib/webparts/addSiteList/loc/{locale}.js",
     "AddJobDetailsWebPartStrings": "lib/webparts/addJobDetails/loc/{locale}.js",
-    "AddTaskListWebPartStrings": "lib/webparts/addTaskList/loc/{locale}.js"
+    "AddTaskListWebPartStrings": "lib/webparts/addTaskList/loc/{locale}.js",
+    "JobdetailsgridWebPartStrings": "lib/webparts/jobdetailsgrid/loc/{locale}.js",
+    "ConfigurationGridWebPartStrings": "lib/webparts/configurationGrid/loc/{locale}.js"
   }
 }
