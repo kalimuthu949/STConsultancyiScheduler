@@ -310,11 +310,6 @@ function getClient(){
 });
 }
 
-
-async function insertClient(){
-  
-}
-
 /* This is place for onload functionalities end*/
 
 /* This is place for mandatory functionalities start*/
@@ -323,12 +318,18 @@ function mandatoryfieldsforTasks() {
   var isAllValueFilled = true;
 
   if (!$("#Tasks").val()) {
-    alertify.error("Please enter Task");
+    alertify.error("Please Enter Task");
     isAllValueFilled = false;
   } else if (!$("#Priority").val()) {
-    alertify.error("Please enter Priority");
+    alertify.error("Please Enter Priority");
     isAllValueFilled = false;
   }
+  else if($("#Client").val().length == 0) {
+    alertify.error("Please Select Client Details");
+    isAllValueFilled = false;
+  }
+ 
+
   return isAllValueFilled;
 }
 
