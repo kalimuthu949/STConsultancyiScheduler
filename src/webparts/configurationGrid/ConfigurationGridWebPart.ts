@@ -20,6 +20,7 @@ export interface IConfigurationGridWebPartProps {
   description: string;
 }
 
+
 export default class ConfigurationGridWebPart extends BaseClientSideWebPart<IConfigurationGridWebPartProps> {
 
   public render(): void {
