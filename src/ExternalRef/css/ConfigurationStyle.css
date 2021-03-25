@@ -1,0 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+#table {
+  font-family: Arial, Helvetica, sans-serif;
+  width: 50%;
+}
+
+#table td,
+#table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  color: rgb(211, 50, 50);
+}
+
+.tab-content {
+  margin: 20px;
+}
