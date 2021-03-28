@@ -1,22 +1,82 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+#workbenchPageContent {
+  max-width: 100%;
+}
+
+/* .ControlZone--emphasisBackground,
+.CanvasZoneContainer {
+  background-color: transparent !important;
+} */
+
+.content_3f3fd3c2,
+.CanvasZone {
+  padding: 0 !important;
+  max-width: 100% !important;
+}
+
+.ToolbarButtonTooltip {
+  display: none;
+}
+
+.Canvas {
+  margin: 0 !important;
 }
 #table {
   font-family: Arial, Helvetica, sans-serif;
   width: 50%;
 }
 
-#table td,
-#table th {
+#tblBodyForDivision td,
+#tblForDivision th,
+#tblBodyForBusinessDivision td,
+#tblForBusinessDivision th,
+#tblBodyForProjects td,
+#tblForProjects th,
+#tblBodyForClient td,
+#tblForClient th,
+#tblBodyForTaskMasterList td,
+#tblForTaskMasterList th {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: center;
-  color: rgb(211, 50, 50);
+  color: white;
+}
+.head-btn-sec {
+  text-align: right;
 }
 
-.tab-content {
+.icon-img {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  background-position: 50%;
+}
+.icon-img.icon-view {
+  background-image: url("../../ExternalRef/images/icon-eye.png");
+}
+.icon-img.icon-edit {
+  background-image: url("../../ExternalRef/images/icon-pencil.png");
+}
+.icon-img {
+  margin: 10px;
+}
+table.dataTable tbody tr {
+  background-color: rgb(0 38 62) !important;
+  height: 20px !important;
+}
+table.dataTable tbody td,
+table.dataTable tbody th {
+  padding: 0px 10px !important;
+}
+.btn {
+  margin-bottom: 10px;
+  background: #dd4b41;
+}
+.tab-content > .tab-pane {
   margin: 20px;
+}
+
+.nav-tabs {
+  border-bottom: 0px solid #ddd !important;
 }
