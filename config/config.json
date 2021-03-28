@@ -57,6 +57,14 @@
           "manifest": "./src/webparts/configurationGrid/ConfigurationGridWebPart.manifest.json"
         }
       ]
+    },
+    "edit-task-list-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/editTaskList/EditTaskListWebPart.js",
+          "manifest": "./src/webparts/editTaskList/EditTaskListWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {
@@ -79,6 +87,7 @@
     "AddJobDetailsWebPartStrings": "lib/webparts/addJobDetails/loc/{locale}.js",
     "AddTaskListWebPartStrings": "lib/webparts/addTaskList/loc/{locale}.js",
     "JobdetailsgridWebPartStrings": "lib/webparts/jobdetailsgrid/loc/{locale}.js",
-    "ConfigurationGridWebPartStrings": "lib/webparts/configurationGrid/loc/{locale}.js"
+    "ConfigurationGridWebPartStrings": "lib/webparts/configurationGrid/loc/{locale}.js",
+    "EditTaskListWebPartStrings": "lib/webparts/editTaskList/loc/{locale}.js"
   }
 }
