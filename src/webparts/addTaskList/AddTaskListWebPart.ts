@@ -176,8 +176,6 @@ var pagehtmlclient = ` <div class="row rowpadding justify-content-around">
       $("#divcontainer").html(pagehtmlbusinessdivision);
     } else if (pagename == "Projects") {
       $("#divcontainer").html(pagehtmlprojects);
-    } else if (pagename == "Priority") {
-      $("#divcontainer").html(pagehtmlpriority);
     }
     else if (pagename == "Client"){
       $("#divcontainer").html(pagehtmlclient);
@@ -198,9 +196,6 @@ var pagehtmlclient = ` <div class="row rowpadding justify-content-around">
       } else if (pagename == "Projects") {
         InstertProjects();
       }
-      // else if (pagename == "Priority"){
-      //   InstertPriority();
-      // }
       else if (pagename == "Client"){
         InstertClient();
       }
@@ -543,8 +538,8 @@ function AlertMessage(Message) {
       message: Message,
 
       onok: function () {
-        //window.location.href = siteURL + "/SitePages/RequestDashboard.aspx";
-        window.location.href = "#";
+        window.location.href = siteURL + "/SitePages/ConfigurationGrid.aspx";
+        //window.location.href = "#";
       },
     })
     .show()

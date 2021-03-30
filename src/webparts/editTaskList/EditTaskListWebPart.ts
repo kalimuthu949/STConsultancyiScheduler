@@ -176,7 +176,7 @@ var pagehtmlclient = ` <div class="row rowpadding justify-content-around">
     </div>`;
 
     pagename = getUrlParameter("pagename");
-    itemid=getUrlParameter("ID");
+    itemid=getUrlParameter("itemid");
 
     if (pagename == "Task") {
       $("#divcontainer").html(pagehtmlfortask);
@@ -424,9 +424,12 @@ async function FetchTaskMasterList(){
 
 
     var Clientvalue=items['Client'];
-    var arrClientvalue=Clientvalue.split(";");
-    arrClientvalue.pop(arrClientvalue.length-1);
-    setdropdownvalues(arrClientvalue, "Client");
+    if(Clientvalue)
+    {
+      var arrClientvalue=Clientvalue.split(";");
+      arrClientvalue.pop(arrClientvalue.length-1);
+      setdropdownvalues(arrClientvalue, "Client");
+    }
   }
   else
   {
@@ -489,7 +492,8 @@ if(mandatoryfiledsforUpdateClient()){
 }
 
 async function UpdateProjects(){
-      if( mandatoryfiledsforUpdateProjects()) {
+      if( mandatoryfiledsforUpdateProjects()) 
+      {
      await sp.web.lists
      .getByTitle("Projects")
       .items.getById(itemid)
@@ -570,7 +574,7 @@ function mandatoryfiledsforUpdateClient() {
 function mandatoryfiledsforUpdateProjects() {
   var isAllValueFilled = true;
 
-  if (!$("#txtProject").val()) {
+  if (!$("#txtProjects").val()) {
     alertify.error("Please enter Project Details");
     isAllValueFilled = false;
   }
@@ -605,8 +609,8 @@ function mandatoryfieldsforUpdateTaskMasterList() {
         message: Message,
   
         onok: function () {
-          //window.location.href = siteURL + "/SitePages/RequestDashboard.aspx";
-          window.location.href = "#";
+          window.location.href = siteURL + "/SitePages/ConfigurationGrid.aspx";
+          //window.location.href = "#";
         },
       })
       .show()
