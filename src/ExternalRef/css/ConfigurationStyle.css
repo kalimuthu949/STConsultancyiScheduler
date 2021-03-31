@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+
 #workbenchPageContent {
   max-width: 100%;
 }
@@ -7,25 +9,22 @@
   background-color: transparent !important;
 } */
 
-.content_3f3fd3c2,
+ .content_3f3fd3c2,
 .CanvasZone {
   padding: 0 !important;
   max-width: 100% !important;
 }
 
-.ToolbarButtonTooltip {
-  display: none;
-}
 
 .Canvas {
   margin: 0 !important;
 }
-#table {
-  font-family: Arial, Helvetica, sans-serif;
-  width: 50%;
+.container{
+  font-family: "Poppins", sans-serif;
+  border-bottom-left-radius: 1px solid white ;
 }
 
-#tblBodyForDivision td,
+.container #tblBodyForDivision td,
 #tblForDivision th,
 #tblBodyForBusinessDivision td,
 #tblForBusinessDivision th,
@@ -36,15 +35,14 @@
 #tblBodyForTaskMasterList td,
 #tblForTaskMasterList th {
   border: 1px solid #ddd;
-  padding: 8px;
   text-align: center;
   color: white;
 }
-.head-btn-sec {
+.container .head-btn-sec {
   text-align: right;
 }
 
-.icon-img {
+.container .icon-img {
   width: 20px;
   height: 20px;
   display: inline-block;
@@ -52,31 +50,83 @@
   background-size: 100%;
   background-position: 50%;
 }
-.icon-img.icon-view {
+.container .icon-img.icon-view {
   background-image: url("../../ExternalRef/images/icon-eye.png");
 }
-.icon-img.icon-edit {
+.container .icon-img.icon-edit {
   background-image: url("../../ExternalRef/images/icon-pencil.png");
 }
-.icon-img {
+.container .icon-img {
   margin: 10px;
 }
-table.dataTable tbody tr {
-  background-color: rgb(0 38 62) !important;
-  height: 20px !important;
+.container table.dataTable tbody tr {
+  background-color: rgb(0 38 62);
+  height: 20px ;
 }
-table.dataTable tbody td,
+.container table.dataTable tbody td,
 table.dataTable tbody th {
-  padding: 0px 10px !important;
+  padding: 0px 10px;
 }
-.btn {
-  margin-bottom: 10px;
+.container .btn {
+   margin-bottom: 10px; 
   background: #dd4b41;
+  color: white;
 }
-.tab-content > .tab-pane {
+.container .tab-content > .tab-pane {
   margin: 20px;
 }
+.container a {
+color: #f26c52;
+} 
 
-.nav-tabs {
-  border-bottom: 0px solid #ddd !important;
+.container label{
+  color: white;
 }
+
+.container button, input, select, textarea {
+  color: black;
+}
+
+/* .container .nav-tabs>li>a {
+  border: 1px  transparent;
+} */
+
+.container 
+ .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+  background-color: rgb(0, 38, 62) !important;
+  color: white;
+ }
+ .container .nav>li>a:focus, .nav>li>a:hover {
+  background-color: rgb(0, 38, 62);
+ }
+ .container input[type="search"] {
+  border: 1px solid black;
+}
+
+
+.container .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_paginate, .dataTables_wrapper .dataTables_processing {
+  color: white;
+}
+.container .dataTables_wrapper .dataTables_paginate {
+color: white!important;
+}
+.container .dataTables_wrapper .dataTables_paginate  .dataTables_wrapper .dataTables_paginate  .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
+  color:white !important;
+}
+.container #tblForProjects_paginate .paginate_button,
+#tblForDivision_paginate .paginate_button,
+#tblForBusinessDivision_paginate .paginate_button,
+#tblForClient_paginate .paginate_button,
+#tblForTaskMasterList_paginate .paginate_button{
+  color:#fff  !important;
+}
+.container #tblForProjects_paginate .paginate_button.current,
+#tblForDivision_paginate .paginate_button.current,
+#tblForBusinessDivision_paginate .paginate_button.current,
+#tblForClient_paginate .paginate_button.current,
+#tblForTaskMasterList_paginate .paginate_button.current{
+   color: #000 !important;
+ }
+.container #tblForDivision_previous,#tblForDivision_next,#tblForClient_previous,#tblForClient_next,#tblForBusinessDivision_previous,#tblForBusinessDivision_next,#tblForProjects_previous,#tblForProjects_next,#tblForTaskMasterList_previous,#tblForTaskMasterList_next{
+   color: #fff !important;
+ }

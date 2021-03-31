@@ -12,42 +12,44 @@
     background-color: #f26c52;
     color: white;
 }
-
-
-                    /* overright css */
-
-.ms-options-wrap>.ms-options>ul input[type=checkbox] {
-  left: 0px!important;
-    top: 13px !important;
+                       /* over right css for the multiselect checkbox */
+.container .ms-options-wrap>.ms-options>ul input[type=checkbox] {
+  left: 0px;
+    top: 13px ;
 }
 
-.ms-options-wrap>.ms-options,.ms-options-wrap>button { 
-	color:black!important;
+.container .ms-options-wrap>.ms-options,.ms-options-wrap>button { 
+	color:black;
   font-family: "Poppins", sans-serif;
-  font-size: 1rem !important;
+  font-size: 1rem ;
   font-weight: 500;
  
 }
-.ms-options-wrap>button:focus
+.container .ms-options-wrap>button:focus
 {
-  color:black!important;
+  color:black;
   font-family: "Poppins", sans-serif;
 }
-.ms-options-wrap>button, .ms-options-wrap>button:focus {
+.container .ms-options-wrap>button, .ms-options-wrap>button:focus {
   color: black;
   height: 38px;
   border-radius: 3px;
+  font-size: 1rem;
+  font-weight: 500;
+
 }
-.ms-options-wrap, .ms-options-wrap * {
+.container .ms-options-wrap, .ms-options-wrap * {
   list-style-type: none;
 }
-.buttoncolor:hover{
-    color: white !important;
+.container .buttoncolor:hover{
+    color: white ;
 }
-
-                            /* stworkbench */
+                            /* ST workbench */
 
 #workbenchPageContent {
     left: -30px !important;
     max-width: 1364px !important;
+  }
+  .container .paginate_button.current:hover{
+    color:black;
   }

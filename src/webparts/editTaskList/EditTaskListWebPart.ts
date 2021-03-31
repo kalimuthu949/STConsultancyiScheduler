@@ -10,8 +10,6 @@ import styles from './EditTaskListWebPart.module.scss';
 import * as strings from 'EditTaskListWebPartStrings';
 
 
-
-
 import "jquery";
 import { sp } from "@pnp/sp/presets/all";
 import "../../ExternalRef/css/addTaskList.css";
@@ -53,6 +51,11 @@ export default class EditTaskListWebPart extends BaseClientSideWebPart<IEditTask
   public render(): void {
 
     var pagehtmlfortask = `<div class="row rowpadding">
+    <div class ="row m-2">
+    <div class="col">
+    <h3 class="text-center">Add / Edit Record</h3>
+    </div>
+    </div>
     <div class="row justify-content-around">
  <div class="col-md-4  m-2">
      <label for="Division" class="form-label">Division</label>
@@ -102,17 +105,23 @@ export default class EditTaskListWebPart extends BaseClientSideWebPart<IEditTask
          <option value="2">Two</option>
          <option value="3">Three</option>
        </select>
-   
  </div>
  </div>
  <div class="row justify-content-around">
-   <div class="col-9 text-end">
+   <div class="col-9 m-2 text-end">
      <button class="btn  buttoncolor" id="btnUpdate" type="Update">Update</button>
+     <button class="btn  buttoncolor" id="btnClose" type="close">Close</button>
+
    </div>
  </div>
 </div>`;
 
-    var pagehtmldivision = `<div class="row rowpadding justify-content-around">
+    var pagehtmldivision = ` <div class ="row m-2">
+    <div class="col">
+    <h3 class="text-center">Add / Edit Record</h3>
+    </div>
+    </div>
+    <div class="row rowpadding justify-content-around">
 <div class="col-md-4  m-2">
     <label for="Division" class="form-label">Division</label>
     <input type="text" class="form-control"  id ="txtDivision">
@@ -121,10 +130,18 @@ export default class EditTaskListWebPart extends BaseClientSideWebPart<IEditTask
   <div class="row justify-content-around">
   <div class="col-4 text-end">
     <button class="btn  buttoncolor" id="btnUpdate" type="Update">Update</button>
+    <button class="btn  buttoncolor" id="btnClose" type="close">Close</button>
+
   </div>
 </div>`;
 
-    var pagehtmlbusinessdivision = `<div class="row rowpadding justify-content-around">
+    var pagehtmlbusinessdivision = `
+    <div class ="row m-2">
+    <div class="col">
+    <h3 class="text-center">Add / Edit Record</h3>
+    </div>
+    </div>
+    <div class="row rowpadding justify-content-around">
 <div class="col-md-4  m-2">
     <label for="BusinessDivision" class="form-label">Business Division</label>
     <input type="text" class="form-control"  id ="txtBusinessDivision">
@@ -133,10 +150,18 @@ export default class EditTaskListWebPart extends BaseClientSideWebPart<IEditTask
   <div class="row justify-content-around">
   <div class="col-4 text-end">
     <button class="btn  buttoncolor" id="btnUpdate" type="Update">Update</button>
+    <button class="btn  buttoncolor" id="btnClose" type="close">Close</button>
+
   </div>
 </div>`;
 
-    var pagehtmlprojects = `<div class="row rowpadding justify-content-around">
+    var pagehtmlprojects = `
+    <div class ="row m-2">
+    <div class="col">
+    <h3 class="text-center">Add / Edit Record</h3>
+    </div>
+    </div>
+    <div class="row rowpadding justify-content-around">
  <div class="col-md-4  m-2">
      <label for="Projects" class="form-label">Projects</label>
      <input type="text" class="form-control"  id ="txtProjects">
@@ -145,10 +170,17 @@ export default class EditTaskListWebPart extends BaseClientSideWebPart<IEditTask
    <div class="row justify-content-around">
   <div class="col-4 text-end">
     <button class="btn  buttoncolor" id="btnUpdate" type="Update">Update</button>
+    <button class="btn  buttoncolor" id="btnClose" type="close">Close</button>
+
   </div>
 </div>`;
 
-    var pagehtmlpriority = `<div class="row rowpadding justify-content-around">
+    var pagehtmlpriority = ` <div class ="row m-2">
+    <div class="col">
+    <h3 class="text-center">Add / Edit Record</h3>
+    </div>
+    </div>
+    <div class="row rowpadding justify-content-around">
  <div class="col-md-4  m-2">
    <label for="Priority" class="form-label">Priority</label>
    <input type="text" class="form-control"  id ="txtPriority">
@@ -157,10 +189,17 @@ export default class EditTaskListWebPart extends BaseClientSideWebPart<IEditTask
  <div class="row justify-content-around">
   <div class="col-4 text-end">
     <button class="btn  buttoncolor" id="btnUpdate" type="Update">Update</button>
+    <button class="btn  buttoncolor" id="btnClose" type="close">Close</button>
+
   </div>
 </div>`;
 
-var pagehtmlclient = ` <div class="row rowpadding justify-content-around">
+var pagehtmlclient = `  <div class ="row m-2">
+<div class="col">
+<h3 class="text-center">Add / Edit Record</h3>
+</div>
+</div>
+<div class="row rowpadding justify-content-around">
 <div class="col-md-4  m-2">
   <label for="Client" class="form-label">Client</label>
   <input type="text" class="form-control"  id ="txtClient">
@@ -169,6 +208,8 @@ var pagehtmlclient = ` <div class="row rowpadding justify-content-around">
 <div class="row justify-content-around">
  <div class="col-4 text-end">
    <button class="btn  buttoncolor" id="btnUpdate" type="Update">Update</button>
+   <button class="btn  buttoncolor" id="btnClose" type="close">Close</button>
+
  </div>
 </div> `;
 
@@ -231,6 +272,11 @@ var pagehtmlclient = ` <div class="row rowpadding justify-content-around">
       else if(pagename == "Division")
       UpdateDivision();
     });
+     
+    //button close
+    $("#btnClose").click(function() {
+      location.href=siteURL+"/SitePages/AddConfigurationGrid.aspx"
+    })
   }
   
 
@@ -536,8 +582,6 @@ if( mandatoryfieldsforUpdateTaskMasterList() ){
   }
 }
 
-
-
  /* This is place for mandatory functionalities start*/
 
  function mandatoryfiledsforUpdateDivision() {
@@ -634,8 +678,6 @@ function getUrlParameter(param) {
     }
   }
 }
-
-
 function setdropdownvalues(selectedOptions, id) {
   for (var i in selectedOptions) {
     var optionVal = selectedOptions[i];

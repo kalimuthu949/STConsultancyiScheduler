@@ -1,6 +1,6 @@
 import { Version } from '@microsoft/sp-core-library';
 import {
-  IPropertyPaneConfiguration,
+  IPropertyPaneConfiguration,  
   PropertyPaneTextField
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
@@ -22,7 +22,7 @@ SPComponentLoader.loadScript(
 import "../../../node_modules/datatables/media/js/jquery.dataTables.min.js";
 import "../../ExternalRef/css/alertify.min.css";
 import "../../../node_modules/datatables/media/css/jquery.dataTables.min.css";
-import "../../ExternalRef/css/ConfigurationStyle.css";
+import "../../ExternalRef/css/ConfigurationStyle.css";     
 var alertify: any = require("../../ExternalRef/js/alertify.min.js");
 
 declare var $;
@@ -55,7 +55,7 @@ export default class ConfigurationGridWebPart extends BaseClientSideWebPart<ICon
     <div class="tab-content">
       <div id="div-division" class="tab-pane fade in active">
       <div class="head-btn-sec">
-      <input class="btn btn-primary btncreate" type="button" pagename="Division" id="btndiv" value="Create">
+      <input class="btn  btncreate" type="button" pagename="Division" id="btndiv" value="Create">
       </div>
         <table id="tblForDivision">
         <thead>
@@ -66,17 +66,17 @@ export default class ConfigurationGridWebPart extends BaseClientSideWebPart<ICon
           </tr>
           </thead>
         <tbody id="tblBodyForDivision">
-        <tr>
-        <td>1</td>
-        <td>Ram</td>
-        <td>KKDI</td>
+        <tr>      
+        <td></td>
+        <td></td>
+        <td></td>
       </tr>
         </tbody>
         </table>
       </div>
       <div id="div-business"  class="tab-pane fade">
       <div class="head-btn-sec">
-      <input class="btn btn-primary btncreate" type="button" pagename="BusinessDivision" id="btnbusdiv" value="Create">
+      <input class="btn  btncreate" type="button" pagename="BusinessDivision" id="btnbusdiv" value="Create">
       </div>
           <table id="tblForBusinessDivision">
           <thead>
@@ -88,16 +88,16 @@ export default class ConfigurationGridWebPart extends BaseClientSideWebPart<ICon
           </thead>
           <tbody id="tblBodyForBusinessDivision">
           <tr>
-          <td>1</td>
-          <td>Ram</td>
-          <td>KKDI</td>
+          <td></td>
+          <td></td>
+          <td></td>
         </tr>
           </tbody>
             </table>
       </div>
       <div id="div-client"  class="tab-pane fade">
       <div class="head-btn-sec">
-      <input class="btn btn-primary btncreate" type="button" pagename="Client" id="btncli" value="Create">
+      <input class="btn  btncreate" type="button" pagename="Client" id="btncli" value="Create">
       </div>
       <table id="tblForClient">
       <thead>
@@ -109,16 +109,16 @@ export default class ConfigurationGridWebPart extends BaseClientSideWebPart<ICon
       </thead>
       <tbody id="tblBodyForClient">
       <tr>
-      <td>1</td>
-      <td>Ram</td>
-      <td>KKDI</td>
+      <td></td>
+      <td></td>
+      <td></td>
     </tr>
       </tbody>
         </table>
       </div>
       <div id="div-project"  class="tab-pane fade">
       <div class="head-btn-sec">
-      <input class="btn btn-primary btncreate" type="button" pagename="Projects" id="btnpro" value="Create">
+      <input class="btn  btncreate" type="button" pagename="Projects" id="btnpro" value="Create">
       </div>
           <table id="tblForProjects">
           <thead>
@@ -130,16 +130,16 @@ export default class ConfigurationGridWebPart extends BaseClientSideWebPart<ICon
           </thead>
           <tbody id="tblBodyForProjects">
           <tr>
-          <td>1</td>
-          <td>Ram</td>
-          <td>KKDI</td>
+          <td></td>
+          <td></td>
+          <td></td>
         </tr>
           </tbody>
             </table>
       </div>
       <div id="div-task"  class="tab-pane fade">
       <div class="head-btn-sec">
-      <input class="btn btn-primary btncreate" type="button" pagename="Task" id="btntask" value="Create">
+      <input class="btn  btncreate" type="button" pagename="Task" id="btntask" value="Create">
       </div>
       <table id="tblForTaskMasterList">
       <thead>
@@ -155,13 +155,13 @@ export default class ConfigurationGridWebPart extends BaseClientSideWebPart<ICon
       </thead>
       <tbody id="tblBodyForTaskMasterList">
       <tr>
-      <td>1</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
-      <td>-</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
       
     </tr>
       </tbody>
@@ -184,11 +184,13 @@ export default class ConfigurationGridWebPart extends BaseClientSideWebPart<ICon
     })
 
 
-    $(document).on("click", ".icon-edit", function () 
-    {
+    $(document).on("click", ".icon-edit", function ()  
+    { 
         location.href=siteURL+"/SitePages/EditConfigData.aspx?pagename="+$(this).attr("pagename")+"&itemid="+$(this).attr("taskid")+"";
+        
     });
   }
+
 
   protected getdataVersion(): Version {
     return Version.parse('1.0');
@@ -217,7 +219,6 @@ export default class ConfigurationGridWebPart extends BaseClientSideWebPart<ICon
   }
 }
    
-
 async function getDivisions() 
 {
   var html = "";
@@ -228,7 +229,7 @@ async function getDivisions()
       // console.log(items);
       for (var i = 0; i < items.length; i++) 
       {
-        html+='<tr><td>'+(i+1)+'</td><td>'+items[i].Title+'</td><td><a href="#"><span pagename="Division" taskid='+items[i].ID+' class="icon-img icon-view"></span></a><a href="#"><span pagename="Division" taskid='+items[i].ID+' class="icon-img icon-edit"></span></a></td></tr>';
+        html+='<tr><td>'+(i+1)+'</td><td>'+items[i].Title+'</td><td><a href="#"><span pagename="Division" taskid='+items[i].ID+' class="icon-img icon-edit"></span></a></td></tr>';
       }
       $("#tblBodyForDivision").html("");
       await $("#tblBodyForDivision").html(html);
@@ -246,7 +247,7 @@ async function getBusinessDivisions() {
     .items.get()
     .then(async (items: any[]) => {
       for (var i = 0; i < items.length; i++) {
-        html+='<tr><td>'+(i+1)+'</td><td>'+items[i].Title+'</td><td><a href="#"><span pagename="BusinessDivision" taskid='+items[i].ID+' class="icon-img icon-view"></span></a><a href="#"><span pagename="BusinessDivision" taskid='+items[i].ID+' class="icon-img icon-edit"></span></a></td></tr>';
+        html+='<tr><td>'+(i+1)+'</td><td>'+items[i].Title+'</td><td><a href="#"><span pagename="BusinessDivision" taskid='+items[i].ID+' class="icon-img icon-edit"></span></a></td></tr>';
       }
       $("#tblBodyForBusinessDivision").html("");
       await $("#tblBodyForBusinessDivision").html(html);
@@ -260,7 +261,7 @@ async function getClient(){
   await sp.web.lists.getByTitle("Client").items.get().then(async (items: any[]) => {
     // console.log(items);
     for (var i = 0; i < items.length; i++){
-      html+='<tr><td>'+(i+1)+'</td><td>'+items[i].Title+'</td><td><a href="#"><span pagename="Client" taskid='+items[i].ID+' class="icon-img icon-view"></span></a><a href="#"><span pagename="Client" taskid='+items[i].ID+' class="icon-img icon-edit"></span></a></td></tr>';
+      html+='<tr><td>'+(i+1)+'</td><td>'+items[i].Title+'</td><td><a href="#"><span pagename="Client" taskid='+items[i].ID+' class="icon-img icon-edit"></span></a></td></tr>';
     }
     $("#tblBodyForClient").html("");
     await $("#tblBodyForClient").html(html);
@@ -278,7 +279,7 @@ async function getProjects() {
     .then(async (items: any[]) => {
       for (var i = 0; i < items.length; i++) {
         
-        html+='<tr><td>'+(i+1)+'</td><td>'+items[i].Title+'</td><td><a href="#"><span pagename="Projects" taskid='+items[i].ID+' class="icon-img icon-view"></span></a><a href="#"><span pagename="Projects" taskid='+items[i].ID+' class="icon-img icon-edit"></span></a></td></tr>';
+        html+='<tr><td>'+(i+1)+'</td><td>'+items[i].Title+'</td><td><a href="#"><span pagename="Projects" taskid='+items[i].ID+' class="icon-img icon-edit"></span></a></td></tr>';
       }
       $("#tblBodyForProjects").html("");
       await $("#tblBodyForProjects").html(html);
@@ -295,7 +296,7 @@ async function getTaskMasterList() {
     .then(async (items: any[]) => {
       for (var i = 0; i < items.length; i++) {
         
-        html+='<tr><td>'+(i+1)+'</td><td>'+items[i].Division+'</td><td>'+items[i].BusinessDivision+'</td><td>'+items[i].Projects+'</td><td>'+items[i].Tasks+'</td><td>'+items[i].Priority+'</td><td><a href="#"><span pagename="Task" taskid='+items[i].ID+' class="icon-img icon-view"></span></a><a href="#"><span pagename="Task" taskid='+items[i].ID+' class="icon-img icon-edit"></span></a></td></tr>';
+        html+='<tr><td>'+(i+1)+'</td><td>'+items[i].Division+'</td><td>'+items[i].BusinessDivision+'</td><td>'+items[i].Projects+'</td><td>'+items[i].Tasks+'</td><td>'+items[i].Priority+'</td><td><a href="#"><span pagename="Task" taskid='+items[i].ID+' class="icon-img icon-edit"></span></a></td></tr>';
       }
       $("#tblBodyForTaskMasterList").html("");
       await $("#tblBodyForTaskMasterList").html(html);
