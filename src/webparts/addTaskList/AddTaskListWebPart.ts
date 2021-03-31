@@ -43,6 +43,11 @@ export default class AddTaskListWebPart extends BaseClientSideWebPart<IAddTaskLi
   }
   public render(): void {
     var pagehtmlfortask = `<div class="row rowpadding">
+    <div class ="row m-2">
+    <div class="col">
+    <h3 class="text-center">Add / Edit Record</h3>
+    </div>
+    </div>
     <div class="row justify-content-around">
  <div class="col-md-4  m-2">
      <label for="Division" class="form-label">Division</label>
@@ -96,61 +101,88 @@ export default class AddTaskListWebPart extends BaseClientSideWebPart<IAddTaskLi
  </div>
  </div>
  <div class="row justify-content-around">
-   <div class="col-9 text-end">
+   <div class="col-9 m-2 text-end">
      <button class="btn  buttoncolor" id="btnSubmit" type="submit">Submit</button>
+     <button class="btn  buttoncolor" id="btnClose" type="close">Close</button>
    </div>
  </div>
 </div>`;
 
-    var pagehtmldivision = `<div class="row rowpadding justify-content-around">
+    var pagehtmldivision = ` <div class ="row m-2">
+    <div class="col">
+    <h3 class="text-center">Add / Edit Record</h3>
+    </div>
+    </div>
+    <div class="row rowpadding justify-content-around">
 <div class="col-md-4  m-2">
     <label for="Division" class="form-label">Division</label>
     <input type="text" class="form-control"  id ="txtDivision">
   </div>
   </div>
-  <div class="row justify-content-around">
-  <div class="col-4 text-end">
+  <div class="row m-1 justify-content-around">
+  <div class="col-4  text-end">
     <button class="btn  buttoncolor" id="btnSubmit" type="submit">Submit</button>
+    <button class="btn  buttoncolor" id="btnClose" type="close">Close</button>
   </div>
 </div>`;
 
-    var pagehtmlbusinessdivision = `<div class="row rowpadding justify-content-around">
+    var pagehtmlbusinessdivision = `
+    <div class ="row m-2">
+    <div class="col">
+    <h3 class="text-center">Add / Edit Record</h3>
+    </div>
+    </div>
+    <div class="row rowpadding justify-content-around">
 <div class="col-md-4  m-2">
     <label for="BusinessDivision" class="form-label">Business Division</label>
     <input type="text" class="form-control"  id ="txtBusinessDivision">
   </div>
   </div>
-  <div class="row justify-content-around">
-  <div class="col-4 text-end">
+  <div class="row m-1 justify-content-around">
+  <div class="col-4  text-end">
     <button class="btn  buttoncolor" id="btnSubmit" type="submit">Submit</button>
+    <button class="btn  buttoncolor" id="btnClose" type="close">Close</button>
   </div>
 </div>`;
 
-    var pagehtmlprojects = `<div class="row rowpadding justify-content-around">
+    var pagehtmlprojects = ` <div class ="row m-2">
+    <div class="col">
+    <h3 class="text-center">Add / Edit Record</h3>
+    </div>
+    </div>
+
+    <div class="row rowpadding justify-content-around">
  <div class="col-md-4  m-2">
      <label for="Projects" class="form-label">Projects</label>
      <input type="text" class="form-control"  id ="txtProjects">
    </div>
    </div>
-   <div class="row justify-content-around">
+   <div class="row m-1 justify-content-around">
   <div class="col-4 text-end">
     <button class="btn  buttoncolor" id="btnSubmit" type="submit">Submit</button>
+    <button class="btn  buttoncolor" id="btnClose" type="close">Close</button>
   </div>
 </div>`;
 
-    var pagehtmlpriority = `<div class="row rowpadding justify-content-around">
- <div class="col-md-4  m-2">
-   <label for="Priority" class="form-label">Priority</label>
-   <input type="text" class="form-control"  id ="txtPriority">
- </div>
- </div>
- <div class="row justify-content-around">
-  <div class="col-4 text-end">
-    <button class="btn  buttoncolor" id="btnSubmit" type="submit">Submit</button>
-  </div>
-</div>`;
+//     var pagehtmlpriority = `<div class="row rowpadding justify-content-around">
+//  <div class="col-md-4  m-2">
+//    <label for="Priority" class="form-label">Priority</label>
+//    <input type="text" class="form-control"  id ="txtPriority">
+//  </div>
+//  </div>
+//  <div class="row justify-content-around">
+//   <div class="col-4 text-end">
+//     <button class="btn  buttoncolor" id="btnSubmit" type="submit">Submit</button>
+//   </div>
+// </div>`;
 
-var pagehtmlclient = ` <div class="row rowpadding justify-content-around">
+var pagehtmlclient = ` 
+<div class ="row m-2">
+<div class="col">
+<h3 class="text-center">Add / Edit Record</h3>
+</div>
+</div>
+<div class="row rowpadding justify-content-around">
 <div class="col-md-4  m-2">
   <label for="Client" class="form-label">Client</label>
   <input type="text" class="form-control"  id ="txtClient">
@@ -159,6 +191,7 @@ var pagehtmlclient = ` <div class="row rowpadding justify-content-around">
 <div class="row justify-content-around">
  <div class="col-4 text-end">
    <button class="btn  buttoncolor" id="btnSubmit" type="submit">Submit</button>
+   <button class="btn  buttoncolor" id="btnClose" type="close">Close</button>
  </div>
 </div> `;
 
@@ -185,6 +218,12 @@ var pagehtmlclient = ` <div class="row rowpadding justify-content-around">
     getBusinessDivisions();
     getProjects();
     getClient();
+
+
+    $("#btnClose").click(function() {
+      location.href=siteURL+"/SitePages/AddConfigurationGrid.aspx"
+    })
+
 
     $("#btnSubmit").click(async function () {
       if (pagename == "Task") {
@@ -430,40 +469,6 @@ async function InsertBusinessDivision() {
       });
   }
 }
-
-
-
-// function mandatoryfiledsforPriority() {
-//   var isAllValueFilled = true;
-
-//   if (!$("#txtProjects").val()) {
-//     alertify.error("Please enter Priority");
-//     isAllValueFilled = false;
-//   }
-//   return isAllValueFilled;
-// }
-
-
-// async function InstertPriority() {
-//   if ( mandatoryfiledsforPriority()) {
-//     var requestdata = {
-//       Title: $("#txtPriority").val(),
-//     };
-//     await sp.web.lists
-//       .getByTitle("Priority")
-//       .items.add(requestdata)
-//       .then(function (data) {
-//         //$(".loading-modal").removeClass("active");
-//         //$("body").removeClass("body-hidden");
-//         AlertMessage("Record created successfully");
-//       })
-//       .catch(function (error) {
-//         ErrorCallBack(error, "InstertPriority");
-//       });
-//   }
-// }
-
-
 
 function mandatoryfiledsforProjects() {
   var isAllValueFilled = true;
