@@ -1,27 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
 
-#workbenchPageContent {
-  max-width: 100%;
-}
 
-/* .ControlZone--emphasisBackground,
-.CanvasZoneContainer {
-  background-color: transparent !important;
-} */
-
- .content_3f3fd3c2,
-.CanvasZone {
-  padding: 0 !important;
-  max-width: 100% !important;
-}
-
-
-.Canvas {
-  margin: 0 !important;
-}
-.container{
-  font-family: "Poppins", sans-serif;
-  border-bottom-left-radius: 1px solid white ;
+.workbench,
+body,
+.root {
+  font-family: "Poppins", sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  background-color: #00263e !important;
 }
 
 .container #tblBodyForDivision td,
@@ -130,3 +116,11 @@ color: white!important;
 .container #tblForDivision_previous,#tblForDivision_next,#tblForClient_previous,#tblForClient_next,#tblForBusinessDivision_previous,#tblForBusinessDivision_next,#tblForProjects_previous,#tblForProjects_next,#tblForTaskMasterList_previous,#tblForTaskMasterList_next{
    color: #fff !important;
  }
+
+
+ /* ! workbench size Dont Forget to comment after works done */
+#workbenchPageContent {
+  left: -30px !important;
+  max-width: 1364px !important;
+}
+/* workbench size */

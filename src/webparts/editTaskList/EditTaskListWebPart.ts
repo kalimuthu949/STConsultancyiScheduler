@@ -275,7 +275,7 @@ var pagehtmlclient = `  <div class ="row m-2">
      
     //button close
     $("#btnClose").click(function() {
-      location.href=siteURL+"/SitePages/AddConfigurationGrid.aspx"
+      location.href=siteURL+"/SitePages/ConfigurationGrid.aspx"
     })
   }
   

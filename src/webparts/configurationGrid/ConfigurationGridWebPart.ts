@@ -13,7 +13,7 @@ import "jquery";
 import { sp } from "@pnp/sp/presets/all";
 //import "datatables";
 SPComponentLoader.loadCss(
-  "https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+  "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
 );
 SPComponentLoader.loadScript(
   "https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"

@@ -10,6 +10,7 @@ import styles from "./AddTaskListWebPart.module.scss";
 import * as strings from "AddTaskListWebPartStrings";
 
 
+
 import "jquery";
 import { sp } from "@pnp/sp/presets/all";
 import "../../ExternalRef/css/addTaskList.css";
@@ -219,9 +220,8 @@ var pagehtmlclient = `
     getProjects();
     getClient();
 
-
     $("#btnClose").click(function() {
-      location.href=siteURL+"/SitePages/AddConfigurationGrid.aspx"
+      location.href=siteURL+"/SitePages/ConfigurationGrid.aspx"
     })
 
 

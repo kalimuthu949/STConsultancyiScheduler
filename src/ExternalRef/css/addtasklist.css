@@ -4,6 +4,16 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+.workbench,
+body,
+.root {
+  font-family: "Poppins", sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  background-color: #00263e !important;
+}
+
 .rowpadding {
   color: white;
   font-family: "Poppins", sans-serif;
@@ -53,3 +63,4 @@
   .container .paginate_button.current:hover{
     color:black;
   }
+  
