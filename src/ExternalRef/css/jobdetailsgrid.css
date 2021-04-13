@@ -1,0 +1,62 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap");
+.workbench,
+body,
+.root {
+  font-family: "Poppins", sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  background-color: #00263e !important;
+}
+.container{
+    font-family: "Poppins", sans-serif;
+}
+.container th,td,tr {
+    color: white!important;
+    text-align: center;
+    
+}
+.container .table-bordered{
+    border: 1px solid white
+}
+.container .buttoncolor{
+    background-color: #f26c52;
+    color: white;
+}
+.container .icon-img {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-position: 50%;
+}
+.container .icon-img.icon-view {
+    background-image: url("../../ExternalRef/images/icon-eye.png");
+  }
+
+                                          /* overright css */     
+
+
+                                          
+  .container table.dataTable tbody tr {
+    background-color: rgb(0 38 62);
+    height: 20px ;
+  }
+  .container table.dataTable tbody td,table.dataTable tbody th {
+    padding: 8px 10px;
+    border: 1px solid white;
+}  
+  .container table.dataTable.no-footer {
+    border-bottom: 1px solid white!important;
+}
+.container .dataTables_wrapper .dataTables_filter, .dataTables_wrapper .dataTables_info, .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_paginate, .dataTables_wrapper .dataTables_processing {
+    color: white!important;
+    margin-bottom: 11px;
+}
+.container #tableForIScheduleJoblist_next,#tableForIScheduleJoblist_previous{
+    color: white!important;
+}
+#workbenchPageContent {
+    left: -30px !important;
+    max-width: 1364px !important;
+  }
