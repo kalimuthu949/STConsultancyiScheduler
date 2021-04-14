@@ -18,6 +18,7 @@ import * as moment from "moment";
 import "datatables";
 import { sp } from "@pnp/pnpjs";
 import "../../ExternalRef/css/StyleJob.css";
+import "../../ExternalRef/css/loader.css";
 
 import "@pnp/sp/webs";
 import "@pnp/sp/site-users/web";
@@ -27,7 +28,7 @@ import "@pnp/sp/site-users/web";
 SPComponentLoader.loadCss(
   "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
 );
-
+import "../../ExternalRef/css/alertify.min.css";
 var alertify: any = require("../../ExternalRef/js/alertify.min.js");
 declare var $;
 
@@ -54,10 +55,9 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
   public render(): void {
     that=this;
     this.domElement.innerHTML = `
-    <div class="loading-modal"> 
-    <div class="spinner-border" role="status"> 
-    <span class="sr-only"></span>
-  </div></div>
+    <span style="display:none" class="loader">
+<img class="loader-spin"/>
+</span>
     <div class="container"><label class="Heading">Site Details</label>
         <div class="row clsRowDiv">
           <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
@@ -124,23 +124,27 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
   </tbody>
 </table>
 <div class="btnsubmit"><input class="submit" type="button" id="btnsubmit" value="Submit">
+<input class="submit" type="button" id="btnClose" value="Close">
 </div>
 </div>`;
 
+$(".loader").show();
 getusersfromsite();
 // $("#txtNode").blur(function()
 // {
 //   getSiteDetails($("#txtNode").val());
 // });
 
-$("#generateFields").click(function()
+$("#generateFields").click(async function()
 {
-  getSiteDetails($("#txtNode").val());
+  $(".loader").show();
+  await getSiteDetails($("#txtNode").val());
 });
 
-$("#btnsubmit").click(function()
+$("#btnsubmit").click(async function()
 {
-  insertischedulejoblist();
+  $(".loader").show();
+  await insertischedulejoblist();
 });
   }
   
@@ -229,6 +233,8 @@ async function getSiteDetails(NodeID)
 
               $("#tbodyForTaskDetails").html('');
               $("#tbodyForTaskDetails").html(htmlfortask);
+
+              $('.loader').hide();
               
           }
       }
@@ -253,7 +259,7 @@ async function getTaskDetails(Projects)
           //taskdetails.push(item);
           for(var i=0;i<item.length;i++)
           {
-          taskdetails.push({"Projects":item[i].Projects,"Priority":item[i].Priority,"Tasks":item[i].Tasks,"Assignee":"","DueDate": null,"Active":""});
+          taskdetails.push({"Projects":item[i].Projects,"Priority":item[i].Priority,"Tasks":item[i].Tasks,"Assignee":"","AssigneeName":"","DueDate": null,"Active":""});
         }
       }
       
@@ -281,8 +287,14 @@ async function insertischedulejoblist() {
   $('.clsactive').each(function()
   {
   taskdetails[$(this).attr('data-index')].Active=($(this).is(':checked')? "Yes" : "No");
-  
   });
+  $('.clsassign').each(function()
+  {
+      taskdetails[$(this).attr('data-index')].Assignee=$(this).val();
+      taskdetails[$(this).attr('data-index')].AssigneeName=$(this).find("option:selected").attr("data-name");
+  });
+
+  
 
     var requestdata = {}; 
     requestdata = {
@@ -301,33 +313,44 @@ async function insertischedulejoblist() {
       console.log(data);
       var strRefnumber=data.data.Id.toString();
       insertischeduletasklist(strRefnumber);
-      AlertMessage("Record created successfully");
+      //AlertMessage("Record created successfully");
     })
     .catch(function (error) {
       ErrorCallBack(error, "insert ischedulejoblist");
     });
     
 }
+
 async function insertischeduletasklist(RefNum) {
-  
+  var count=1;
   var requesttaskdata = {};
               for(var i=0;i<taskdetails.length;i++)
               {
-               
-                  requesttaskdata = {
+                
+                requesttaskdata = {
+
                     ReferenceNumber :RefNum,
                     Project: taskdetails[i].Projects,
                     TaskName: taskdetails[i].Tasks,
                     Priority: taskdetails[i].Priority,
                     DueDate: taskdetails[i].DueDate,
-                    Active: taskdetails[i].Active
+                    Active: taskdetails[i].Active,
+                    AssignedToEmail: taskdetails[i].Assignee,
+                    AssigneeName: taskdetails[i].AssigneeName
                   };
                   await sp.web.lists
                   .getByTitle("ischeduletasklist")
                   .items.add(requesttaskdata)
-                  .then(function (data) {
+                  .then(function (data) 
+                  {
+                    count++;
+
+                    if(count=taskdetails.length)
+                    {
+                      $(".loader").hide();
+                      AlertMessage("Job created successfully");
+                    }
                     
-                    AlertMessage("Record created successfully");
                   })
                   .catch(function (error) {
                     ErrorCallBack(error, "insert ischeduletasklist");
@@ -349,14 +372,12 @@ async function ErrorCallBack(error, methodname)
       .items.add(errordata)
       .then(function (data) 
       {
-        $(".loading-modal").removeClass("active");
-        $("body").removeClass("body-hidden");
+        $('.loader').hide();
         AlertMessage("Something went wrong.please contact system admin");
       });
   } catch (e) {
     //alert(e.message);
-    $(".loading-modal").removeClass("active");
-    $("body").removeClass("body-hidden");
+    $('.loader').hide();
     AlertMessage("Something went wrong.please contact system admin");
   }
 }
@@ -389,9 +410,14 @@ async function getusersfromsite()
     console.log(response);
     for(var i=0;i<response.value.length;i++)
   {
-     options += `<option value="${response.value[i].mail}">${response.value[i].displayName}</option>`;
+    if(response.value[i].mail) 
+    options += `<option data-name="${response.value[i].displayName}" value="${response.value[i].mail}">${response.value[i].displayName}</option>`;
   }
   await console.log(options); 
+  $('.loader').hide();
     });
+  }).catch(function (error) {
+    ErrorCallBack(error, "getusersfromsite");
   });
 }
+

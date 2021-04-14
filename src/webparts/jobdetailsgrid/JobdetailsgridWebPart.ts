@@ -14,6 +14,7 @@ import * as strings from 'JobdetailsgridWebPartStrings';
 import { sp } from "@pnp/sp/presets/all";
 import "jquery";
 import "../../ExternalRef/css/jobdetailsgrid.css";
+import "../../ExternalRef/css/loader.css";
 var alertify: any = require("../../ExternalRef/js/alertify.min.js");
 
 declare var $;
@@ -42,6 +43,9 @@ export default class JobdetailsgridWebPart extends BaseClientSideWebPart<IJobdet
   }
   public render(): void {
     this.domElement.innerHTML = `
+    <span style="display:none" class="loader">
+<img class="loader-spin"/>
+</span>
      <div class=container>
      <h3 class="text-center">Job Details </h3>
   <div class="btntext text-end py-2">
@@ -52,7 +56,6 @@ export default class JobdetailsgridWebPart extends BaseClientSideWebPart<IJobdet
     <thead>
       <tr>
         <th>S.No</th>
-        <th>Title</th>
         <th>Client</th>
         <th>SiteName</th>
         <th>NodeID</th>
@@ -82,7 +85,7 @@ export default class JobdetailsgridWebPart extends BaseClientSideWebPart<IJobdet
     </tbody>
   </table>
      </div>`;
-  
+    $('.loader').show();
      getIScheduleJoblist();
     }
 
@@ -134,12 +137,14 @@ async function getIScheduleJoblist(){
       htmldata = items[i].Projects
     }
     
-      html += `<tr><td>${i+1}<td>${items[i].Title}</td><td>${items[i].Client}</td><td>${items[i].SiteName}<td>${items[i].NodeID}</td>${htmldata}<td>${items[i].SiteType}<td>${htmldata}</td> <td>${items[i].VersionID}</td><td><a href="#"><span class="icon-img icon-view"></span></a></td></tr>`
+      html += `<tr><td>${i+1}</td><td>${items[i].Client}</td><td>${items[i].SiteName}<td>${items[i].NodeID}</td>${htmldata}<td>${items[i].SiteType}<td>${htmldata}</td> <td>${items[i].VersionID}</td><td><a href="#"><span class="icon-img icon-view"></span></a></td></tr>`
 
     }
     $("#IScheduleJoblist").html("");
     $("#IScheduleJoblist").html(html);
     $("#tableForIScheduleJoblist").DataTable();
+
+    $('.loader').hide();
 })
 .catch(function (error) {
   ErrorCallBack(error, "getIScheduleJoblist");
