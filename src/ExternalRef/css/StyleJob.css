@@ -2,15 +2,23 @@
 * {
   box-sizing: border-box;
 }
+.workbench,
+body,
+.root {
+  font-family: "Poppins", sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  background-color: #00263e !important;
+}
 
-.container {
+.ischedule .container {
   display: flex;
   flex-wrap: wrap;
   /*border:2px solid #f26c52;*/
   padding: 10px;
 }
 
-.clsRowDiv {
+.ischedule .clsRowDiv {
   display: flex;
   flex-wrap: wrap;
   border: 2px solid #f26c52;
@@ -20,12 +28,12 @@
 }
 
 /* Create two equal columns that sits next to each other */
-.column {
+.ischedule .column {
   margin: 14px;
   padding: 10px;
 }
 
-.Heading {
+.ischedule .Heading {
   position: relative;
   left: 40px;
   height: 40px;
@@ -34,39 +42,39 @@
   background: rgb(0 38 62);
 }
 
-select {
+.ischedule select {
   width: 150px;
   height: 25px;
 }
-select:focus {
+.ischedule select:focus {
   min-width: 150px;
   width: auto;
   color: black;
 }
 
-table {
+.ischedule table {
   font-family: arial, sans-serif;
   border-collapse: collapse;
   width: 100%;
   margin: 20px;
 }
 
-th {
+.ischedule th {
   color: #f26c52;
 }
 
-td,
+.ischedule td,
 th {
   border: 1px solid #f26c52;
   text-align: left;
   padding: 8px;
 }
 
-tr:nth-child(even) {
+.ischedule tr:nth-child(even) {
   /*background-color: #f26c52;*/
 }
 
-button,
+.ischedule button,
 input,
 select,
 textarea {
@@ -79,7 +87,7 @@ textarea {
 }
 /* workbench size */
 
-.generate-fields {
+.ischedule .generate-fields {
   display: inline-block;
   margin-left: 6px;
   width: 22px !important;
@@ -91,23 +99,29 @@ textarea {
   cursor: pointer;
   vertical-align: middle;
 }
-input#txtNode {
+.ischedule input#txtNode {
   display: inline-block;
   vertical-align: middle;
 }
-.btnsubmit {
+.ischedule .btnsubmit {
   text-align: right !important;
 }
-.submit {
-  margin-left: 20px;
+.ischedule .submit {
   margin-bottom: 20px;
+  margin-top: 20px;
   border: 1px solid transparent;
   padding: 0.375rem 0.75rem;
   border-radius: 0.25rem;
   background-color: #dd4b41;
   color: #fff;
   cursor: pointer;
+  float: left;
+  width: 100px;
 }
-select {
+.ischedule select {
   width: 150px !important;
+}
+
+input#btnClose {
+  margin-left: 20px;
 }

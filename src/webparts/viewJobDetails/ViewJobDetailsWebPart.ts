@@ -16,8 +16,11 @@ import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import "jquery";
 import * as moment from "moment";
 import "datatables";
+import "moment";
+
 import { sp } from "@pnp/pnpjs";
 import "../../ExternalRef/css/StyleJob.css";
+import "../../ExternalRef/css/loader.css";
 
 import "@pnp/sp/webs";
 import "@pnp/sp/site-users/web";
@@ -25,7 +28,7 @@ import "@pnp/sp/site-users/web";
 SPComponentLoader.loadCss(
   "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
 );
-
+import "../../ExternalRef/css/alertify.min.css";
 var alertify: any = require("../../ExternalRef/js/alertify.min.js");
 declare var $;
 
@@ -33,6 +36,8 @@ var that;
 var Itemid;
 var taskdetails=[];
 var tval='';
+
+var siteURL="";
 
 export interface IViewJobDetailsWebPartProps {
   description: string;
@@ -50,12 +55,16 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
 
   public render(): void {
     that=this;
+    siteURL=this.context.pageContext.web.absoluteUrl;
     this.domElement.innerHTML = `
+    <span style="display:none" class="loader">
+<img class="loader-spin"/>
+</span>
     <div class="loading-modal"> 
     <div class="spinner-border" role="status"> 
     <span class="sr-only"></span>
   </div></div>
-    <div class="container"><label class="Heading">Site Details</label>
+    <div class="container ischedule"><label class="Heading">Site Details</label>
         <div class="row clsRowDiv">
           <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
             <label>Node ID</label>
@@ -119,9 +128,21 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
   </tr>
   </tbody>
 </table>
-</div>`;
+</div>
+<div class="btnsubmit">
+<input class="submit" type="button" id="btnClose" value="Close">
+</div>
+</div>
+`;
+$(".loader").show();
 Itemid = getUrlParameter("Itemid");
 getIschedulejobList(Itemid);
+
+$(document).on('click','#btnClose',function()
+{
+     location.href=`${siteURL}/SitePages/JobDetails.aspx`;
+});
+
   }
 
 
@@ -185,16 +206,17 @@ async function getIschedulejobList(Itemid)
                 html+="<li>"+tval+"</li>";
                 await getIscheduletaskList(tval);
           }
-          console.log(taskdetails);
               var htmlfortask='';
-              var varable  ="checked";
+              var isChecked  ="checked";
               
               for(var i=0;i<taskdetails.length;i++)
               {
                 if(taskdetails[i].Active=="No")
-                varable  ="";
+                isChecked  ="";
+                else
+                isChecked  ="checked";
 
-                htmlfortask += `<tr><td>${taskdetails[i].Project}</td><td>${taskdetails[i].TaskName}</td><td>${taskdetails[i].AssigneeName}</td><td>${taskdetails[i].DueDate}</td><td><input type="checkbox" ${varable} class="clsactive" data-index=${i}></td></tr>`;
+                htmlfortask += `<tr><td>${taskdetails[i].Project}</td><td>${taskdetails[i].TaskName}</td><td>${taskdetails[i].AssigneeName}</td><td>${taskdetails[i].DueDate}</td><td><input type="checkbox" ${isChecked} class="clsactive" data-index=${i}></td></tr>`;
                 
               }
           $("#selectedProjects").html('');
@@ -202,11 +224,15 @@ async function getIschedulejobList(Itemid)
 
           $("#tbodyForTaskDetails").html('');
           $("#tbodyForTaskDetails").html(htmlfortask);
+
+          disableallfields();
+
+          $('.loader').hide();
         }
     }
     else
     {
-      alert("Can't Find Site")
+      ErrorCallBack("No data","getIschedulejobList")
     }
 }).catch((error)=>
 {
@@ -225,7 +251,7 @@ async function getIscheduletaskList(Projects)
           //taskdetails.push(item);
           for(var i=0;i<item.length;i++)
           {
-          taskdetails.push({"Project":item[i].Project,"Priority":item[i].Priority,"TaskName":item[i].TaskName,"AssigneeName":item[i].AssigneeName,"DueDate": item[i].DueDate,"Active":item[i].Active});
+          taskdetails.push({"Project":item[i].Project,"Priority":item[i].Priority,"TaskName":item[i].TaskName,"AssigneeName":item[i].AssigneeName,"DueDate": moment(item[i].DueDate).format("DD-MM-YYYY"),"Active":item[i].Active});
         }
       }
       
@@ -247,14 +273,12 @@ async function ErrorCallBack(error, methodname)
       .items.add(errordata)
       .then(function (data) 
       {
-        $(".loading-modal").removeClass("active");
-        $("body").removeClass("body-hidden");
+        $('.loader').hide();
         AlertMessage("Something went wrong.please contact system admin");
       });
   } catch (e) {
     //alert(e.message);
-    $(".loading-modal").removeClass("active");
-    $("body").removeClass("body-hidden");
+    $('.loader').hide();
     AlertMessage("Something went wrong.please contact system admin");
   }
 }
@@ -285,4 +309,14 @@ function getUrlParameter(param) {
       return urlparam[1];
     }
   }
+}
+
+function disableallfields()
+{
+  $("#txtNode").prop('disabled',true);
+  $("#txtSiteName").prop('disabled',true);
+  $("#txtSiteType").prop('disabled',true);
+  $("#txtClient").prop('disabled',true);
+  $("#txtVersion").prop('disabled',true);
+  $(".clsactive").prop('disabled',true);
 }

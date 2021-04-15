@@ -17,8 +17,7 @@ import "jquery";
 import * as moment from "moment";
 import "datatables";
 import { sp } from "@pnp/pnpjs";
-import "../../ExternalRef/css/StyleJob.css";
-import "../../ExternalRef/css/loader.css";
+
 
 import "@pnp/sp/webs";
 import "@pnp/sp/site-users/web";
@@ -29,9 +28,11 @@ SPComponentLoader.loadCss(
   "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
 );
 import "../../ExternalRef/css/alertify.min.css";
+import "../../ExternalRef/css/StyleJob.css";
+import "../../ExternalRef/css/loader.css";
 var alertify: any = require("../../ExternalRef/js/alertify.min.js");
 declare var $;
-
+var siteURL="";
 
 // import "../../ExternalRef/js/sp.peoplepicker.js";
 var taskdetails=[];
@@ -54,11 +55,12 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
 
   public render(): void {
     that=this;
+    siteURL=this.context.pageContext.web.absoluteUrl;
     this.domElement.innerHTML = `
     <span style="display:none" class="loader">
 <img class="loader-spin"/>
 </span>
-    <div class="container"><label class="Heading">Site Details</label>
+    <div class="container ischedule" ><label class="Heading">Site Details</label>
         <div class="row clsRowDiv">
           <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
             <label>Node ID</label>
@@ -123,12 +125,21 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
   </tr>
   </tbody>
 </table>
-<div class="btnsubmit"><input class="submit" type="button" id="btnsubmit" value="Submit">
+</div>
+<div class="btnsubmit"><input class="submit" type="button" id="btnsubmit" value="Submit" style="display:none">
 <input class="submit" type="button" id="btnClose" value="Close">
 </div>
-</div>`;
+</div>
+`;
 
 $(".loader").show();
+
+$(document).on('click','#btnClose',function()
+{
+     location.href=`${siteURL}/SitePages/JobDetails.aspx`;
+});
+
+
 getusersfromsite();
 // $("#txtNode").blur(function()
 // {
@@ -230,6 +241,7 @@ async function getSiteDetails(NodeID)
 
               $(".divProjectdetails").show();
               $("#tblForTasks").show();
+              $("#btnsubmit").show();
 
               $("#tbodyForTaskDetails").html('');
               $("#tbodyForTaskDetails").html(htmlfortask);
