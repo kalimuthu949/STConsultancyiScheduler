@@ -24,12 +24,14 @@ import "@pnp/sp/site-users/web";
 
 
 // import "../../ExternalRef/js/sp.peoplepicker.js";
+SPComponentLoader.loadCss("https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css");
 SPComponentLoader.loadCss(
   "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
 );
 import "../../ExternalRef/css/alertify.min.css";
 import "../../ExternalRef/css/StyleJob.css";
 import "../../ExternalRef/css/loader.css";
+import "../../ExternalRef/js/select2.min.js";
 var alertify: any = require("../../ExternalRef/js/alertify.min.js");
 declare var $;
 var siteURL="";
@@ -247,6 +249,8 @@ async function getSiteDetails(NodeID)
               $("#tbodyForTaskDetails").html(htmlfortask);
 
               $('.loader').hide();
+
+              $(".clsassign").select2();
               
           }
       }
