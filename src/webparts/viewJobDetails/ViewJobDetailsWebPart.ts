@@ -28,6 +28,13 @@ import "@pnp/sp/site-users/web";
 SPComponentLoader.loadCss(
   "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
 );
+SPComponentLoader.loadCss(
+  "https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+);
+SPComponentLoader.loadScript(
+  "https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+);
+
 import "../../ExternalRef/css/alertify.min.css";
 var alertify: any = require("../../ExternalRef/js/alertify.min.js");
 declare var $;
@@ -36,6 +43,7 @@ var that;
 var Itemid;
 var taskdetails=[];
 var tval='';
+
 
 var siteURL="";
 
@@ -120,6 +128,7 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
     <th>Assignee</th>
     <th>Due Date</th>
     <th>Active</th>
+    <th>Action</th>
   </tr>
   </thead>
   <tbody id="tbodyForTaskDetails">
@@ -132,6 +141,31 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
 <div class="btnsubmit">
 <input class="submit" type="button" id="btnClose" value="Close">
 </div>
+
+<!-- Modal -->
+<div class="new-container">
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title"><label>Task Details</label></h4>
+        </div>
+        <div class="modal-body" id="selectedtaskdetails">
+          <p></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
 </div>
 `;
 $(".loader").show();
@@ -143,9 +177,16 @@ $(document).on('click','#btnClose',function()
      location.href=`${siteURL}/SitePages/JobDetails.aspx`;
 });
 
+$(document).on('click','#icon-view',async function()
+{
+  $(".loader").show();
+  var viewdata='';
+viewdata=$(this).attr("data-index");
+console.log(viewdata);
+  await viewtaskdetails(viewdata);
+});
+
   }
-
-
 
   protected get dataVersion(): Version {
   return Version.parse('1.0');
@@ -216,9 +257,10 @@ async function getIschedulejobList(Itemid)
                 else
                 isChecked  ="checked";
 
-                htmlfortask += `<tr><td>${taskdetails[i].Project}</td><td>${taskdetails[i].TaskName}</td><td>${taskdetails[i].AssigneeName}</td><td>${taskdetails[i].DueDate}</td><td><input type="checkbox" ${isChecked} class="clsactive" data-index=${i}></td></tr>`;
+                htmlfortask += `<tr><td>${taskdetails[i].Project}</td><td>${taskdetails[i].TaskName}</td><td>${taskdetails[i].AssigneeName}</td><td>${taskdetails[i].DueDate}</td><td><input type="checkbox" ${isChecked} class="clsactive" data-index=${i}></td><td><a href="#"><span class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" id="icon-view" data-index=${i}></span></a></td></tr>`;
                 
               }
+
           $("#selectedProjects").html('');
           $("#selectedProjects").html(html);
 
@@ -251,7 +293,7 @@ async function getIscheduletaskList(Projects)
           //taskdetails.push(item);
           for(var i=0;i<item.length;i++)
           {
-          taskdetails.push({"Project":item[i].Project,"Priority":item[i].Priority,"TaskName":item[i].TaskName,"AssigneeName":item[i].AssigneeName,"DueDate": moment(item[i].DueDate).format("DD-MM-YYYY"),"Active":item[i].Active});
+          taskdetails.push({"Project":item[i].Project,"Priority":item[i].Priority,"TaskName":item[i].TaskName,"AssigneeName":item[i].AssigneeName,"DueDate": moment(item[i].DueDate).format("DD-MM-YYYY"),"Active":item[i].Active,"Startdate": moment(item[i].Startdate).format("DD-MM-YYYY"),"EndDate": moment(item[i].EndDate).format("DD-MM-YYYY"),"HoldStartDate": moment(item[i].HoldStartDate).format("DD-MM-YYYY"),"HoldEndDate": moment(item[i].HoldEndDate).format("DD-MM-YYYY"),"CompletionDate": moment(item[i].CompletionDate).format("DD-MM-YYYY")});
         }
       }
       
@@ -311,6 +353,7 @@ function getUrlParameter(param) {
   }
 }
 
+
 function disableallfields()
 {
   $("#txtNode").prop('disabled',true);
@@ -319,4 +362,49 @@ function disableallfields()
   $("#txtClient").prop('disabled',true);
   $("#txtVersion").prop('disabled',true);
   $(".clsactive").prop('disabled',true);
+}
+function viewtaskdetails(viewdata)
+{
+  var htmlfortaskdetails='';
+  for(var i=0;i<taskdetails.length;i++)
+  {
+    var Sdate,Edate,HoldSdate,HoldEdate,Completiondate;
+
+    Sdate=taskdetails[viewdata].Startdate;
+    if(!Sdate)
+    Sdate=taskdetails[viewdata].Startdate;
+    else
+    Sdate="NA";
+
+    Edate=taskdetails[viewdata].EndDate;
+    if(!Edate)
+    Edate=taskdetails[viewdata].EndDate;
+    else
+    Edate="NA";
+
+    HoldSdate=taskdetails[viewdata].HoldStartDate;
+    if(!HoldSdate)
+    HoldSdate=taskdetails[viewdata].HoldStartDate;
+    else
+    HoldSdate="NA";
+    
+    HoldEdate=taskdetails[viewdata].HoldEndDate;
+    if(!HoldEdate)
+    HoldEdate=taskdetails[viewdata].HoldEndDate;
+    else
+    HoldEdate="NA";
+
+    Completiondate=taskdetails[viewdata].CompletionDate;
+    if(!Sdate)
+    Completiondate=taskdetails[viewdata].CompletionDate;
+    else
+    Completiondate="NA";
+
+    htmlfortaskdetails = `<label>Project Name</label> : <p>${taskdetails[viewdata].Project}</p><label>Task Name</label> : <p>${taskdetails[viewdata].TaskName}</p><label>Assignee Name</label> : <p>${taskdetails[viewdata].AssigneeName}</p><label>Due Date</label> : <p>${taskdetails[viewdata].DueDate}</p><label>Start Date</label> : <p>${Sdate}</p><label>End Date</label> : <p>${Edate}</p><label>Hold Start Date</label> : <p>${HoldSdate}</p><label>Hold End Date</label> : <p>${HoldEdate}</p><label>Completion Date</label> : <p>${Completiondate}</p>`;
+    
+  } 
+
+$("#selectedtaskdetails").html('');
+$("#selectedtaskdetails").html(htmlfortaskdetails);
+$('.loader').hide();
 }
