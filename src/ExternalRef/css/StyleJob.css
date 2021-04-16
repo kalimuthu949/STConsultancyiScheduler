@@ -125,3 +125,38 @@ textarea {
 input#btnClose {
   margin-left: 20px;
 }
+
+#icon-view {
+  margin: 10px;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: 100%;
+  background-position: 50%;
+  background-color: rgb(0, 38, 62);
+  border-color: rgb(0, 38, 62);
+}
+#icon-view {
+  background-image: url("../../ExternalRef/images/icon-eye.png");
+}
+.btn-group-lg > .btn,
+.btn-lg {
+  padding: 0px 0px;
+}
+.modal-body,
+.modal-header {
+  color: black;
+}
+
+.modal-body label {
+  width: 150px;
+}
+.modal-body label,
+.modal-body p {
+  display: inline-block;
+}
+.modal-body p {
+  width: 400px;
+  padding-left: 10px;
+}
