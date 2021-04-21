@@ -38,6 +38,8 @@ var siteURL="";
 
 // import "../../ExternalRef/js/sp.peoplepicker.js";
 var taskdetails=[];
+var actiondetails=[];
+var htmlfordate='';
 var projects='';
 var options='';
 var that;
@@ -128,6 +130,49 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
   </tbody>
 </table>
 </div>
+
+<div class="container Actiondetails" style="display:none"><label class="Heading" >Action</label>
+        <div class="row clsRowDiv divforaction">
+        <div class="column col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12" class="fileupload">
+            <label>Upload File</label>
+            <input type="file" id="fileupload"> 
+          </div>
+          <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+            <label>Comments</label>
+            <input type="text" id="txtcmd">
+          </div>
+          <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+            <label>Assignee</label>
+            <select id="actionassignee"></select>
+          </div>
+          <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+            <label>Due Date</label>
+            <input type="date" id="datedue">
+          </div>
+          <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+          <input class="btnsave" type="button" id="btnsave" value="Save">
+          </div>
+          </div> 
+        </div>
+
+        <div class="row clsRowDiv" id="tblForaction" style="display:none">
+        <table>
+        <thead>
+        <tr>
+          <th>File Name</th>
+          <th>Comments</th>
+          <th>Assignee</th>
+          <th>Due Date</th>
+        </tr>
+        </thead>
+        <tbody id="tbodyForactionDetails">
+        <tr>
+          <td> </td>
+        </tr>
+        </tbody>
+      </table>
+      </div>
+
 <div class="btnsubmit"><input class="submit" type="button" id="btnsubmit" value="Submit" style="display:none">
 <input class="submit" type="button" id="btnClose" value="Close">
 </div>
@@ -158,6 +203,12 @@ $("#btnsubmit").click(async function()
 {
   $(".loader").show();
   await insertischedulejoblist();
+});
+
+$("#btnsave").click(async function()
+{
+  $(".loader").show();
+  await actionlist();
 });
   }
   
@@ -237,6 +288,17 @@ async function getSiteDetails(NodeID)
                   htmlfortask += `<tr><td>${taskdetails[i].Projects}</td><td>${taskdetails[i].Tasks}</td><td><select class="clsassign" data-index=${i}>${options}</select></td><td><input type="date" class="clsduedate" data-index=${i}></td><td><input type="checkbox" checked class="clsactive" data-index=${i}></td></tr>`;
                 
               }
+
+              var htmlforassignee='';
+              var today = new Date();
+              for(var i=0;i<1;i++)
+              {
+              
+                  htmlforassignee += `${options}`;
+                  var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                  htmlfordate= moment(date).format("YYYY-MM-DD");
+                  console.log(htmlfordate);
+              }
               
               $("#selectedProjects").html('');
               $("#selectedProjects").html(html);
@@ -244,13 +306,21 @@ async function getSiteDetails(NodeID)
               $(".divProjectdetails").show();
               $("#tblForTasks").show();
               $("#btnsubmit").show();
+              $(".Actiondetails").show();
 
               $("#tbodyForTaskDetails").html('');
               $("#tbodyForTaskDetails").html(htmlfortask);
 
+              $("#actionassignee").html('');
+              $("#actionassignee").html(htmlforassignee);
+
+              $("#datedue").val('');
+              $("#datedue").val(htmlfordate);
+
               $('.loader').hide();
 
               $(".clsassign").select2();
+              $("#actionassignee").select2();
               
           }
       }
@@ -288,11 +358,6 @@ async function getTaskDetails(Projects)
 //insert work
 async function insertischedulejoblist() {
 
-  // $('.clsassign').each(function()
-  // {
-  // taskdetails[$(this).attr('data-index')].Assignee=$(this).val();
-  
-  // });
   $('.clsduedate').each(function()
   {
   if($(this).val()!="")
@@ -329,6 +394,7 @@ async function insertischedulejoblist() {
       console.log(data);
       var strRefnumber=data.data.Id.toString();
       insertischeduletasklist(strRefnumber);
+      actionlistdetails(strRefnumber);
       //AlertMessage("Record created successfully");
     })
     .catch(function (error) {
@@ -361,7 +427,7 @@ async function insertischeduletasklist(RefNum) {
                   {
                     count++;
 
-                    if(count=taskdetails.length)
+                    if(count==taskdetails.length)
                     {
                       $(".loader").hide();
                       AlertMessage("Job created successfully");
@@ -375,6 +441,65 @@ async function insertischeduletasklist(RefNum) {
                 }
               
 }
+
+async function actionlist()
+{
+  $("#tblForaction").show();
+  var requestactiondata = {}; 
+
+   requestactiondata = {
+    //ReferenceNumber :strRefnumber,
+    Filename:$("#fileupload")[0].files[0].name,
+    FileContent:$("#fileupload")[0].files[0],
+    Comments:$("#txtcmd").val(),
+    AssignedToEmail:$("#actionassignee option:selected").val(),
+    AssigneeName:$("#actionassignee option:selected").attr("data-name"),
+    DueDate:$("#datedue").val()
+  }
+  actiondetails.push(requestactiondata);
+  console.log(actiondetails);
+
+  $('#txtcmd').val("");
+  $('#fileupload').val("");
+  $('#datedue').val(htmlfordate);
+
+  var htmlforaction="";
+  for(var i=0;i<actiondetails.length;i++)
+              {
+    var Ddate;
+    Ddate=actiondetails[i].DueDate;
+    if(!Ddate)
+    Ddate=actiondetails[i].DueDate;
+    else
+    Ddate="NA";
+              
+                  htmlforaction += `<tr><td>${actiondetails[i].Filename}</td><td>${actiondetails[i].Comments}</td><td>${actiondetails[i].AssigneeName}</td><td>${moment(actiondetails[i].DueDate).format("DD-MM-YYYY")}</td></tr>`; 
+              }
+
+              $("#tbodyForactionDetails").html('');
+              $("#tbodyForactionDetails").html(htmlforaction);
+              $(".loader").hide();
+}
+
+async function actionlistdetails(RefNum)
+              {
+            for(var i=0;i<actiondetails.length;i++)
+            {
+              await sp.web.lists
+              .getByTitle("JobAction")
+              .items.add({"ReferenceNumber":RefNum,"Filename":actiondetails[i].Filename,"Comments":actiondetails[i].Comments,"AssignedToEmail":actiondetails[i].AssignedToEmail,"AssigneeName":actiondetails[i].AssigneeName,"DueDate":actiondetails[i].DueDate})
+              .then(function (data) {
+                console.log(data);
+                var Refnum=data.data.Id.toString();
+                const Item = sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
+                Item.attachmentFiles.add(actiondetails[i].Filename, actiondetails[i].FileContent);
+                AlertMessage("Record created successfully");
+              })
+              .catch(function (error) {
+                ErrorCallBack(error, "insert JobAction");
+              });
+            }
+              }
 
 async function ErrorCallBack(error, methodname) 
 {
