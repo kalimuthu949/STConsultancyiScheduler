@@ -127,7 +127,7 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
     <th>Task Name</th>
     <th>Assignee</th>
     <th>Due Date</th>
-    <th>Active</th>
+    <th>View</th>
   </tr>
   </thead>
   <tbody id="tbodyForTaskDetails">
@@ -160,12 +160,12 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
   </div>
 </div>
 
+<label class="Heading">Action Details</label>
 <div class="row clsRowDiv" id="tblForaction">
         <table>
         <thead>
         <tr>
           <th>File Name</th>
-          <th>File Url</th>
           <th>Comments</th>
           <th>Assignee</th>
           <th>Due Date</th>
@@ -334,7 +334,7 @@ async function getJobAction()
             const itemval = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
             const Info = await itemval.attachmentFiles();
             console.log(Info); 
-            htmlforaction += `<tr><td>${item[i].Filename}</td><td><a href="${Info[0].ServerRelativeUrl}" target="_blank">${item[i].Filename}</a></td><td>${item[i].Comments}</td><td>${item[i].AssigneeName}</td><td>${moment(item[i].DueDate).format("DD-MM-YYYY")}</td><td>${item[i].Status}</td></tr>`; 
+            htmlforaction += `<tr><td><a href="${Info[0].ServerRelativeUrl}" target="_blank">${item[i].Filename}</a></td><td>${item[i].Comments}</td><td>${item[i].AssigneeName}</td><td>${moment(item[i].DueDate).format("DD-MM-YYYY")}</td><td>${item[i].Status}</td></tr>`; 
         }
         $("#tbodyForactionDetails").html('');
         $("#tbodyForactionDetails").html(htmlforaction);

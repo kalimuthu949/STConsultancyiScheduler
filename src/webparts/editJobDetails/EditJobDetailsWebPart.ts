@@ -132,8 +132,8 @@ export default class EditJobDetailsWebPart extends BaseClientSideWebPart <IEditJ
 </table>
 </div>
 
-<div class="container Actiondetails"><label class="Heading" >Action</label>
-        <div class="row clsRowDiv divforaction">
+<label class="Heading Actiondetails"">Action Details</label>
+        <div class="row clsRowDiv divforaction Actiondetails">
         <div class="column col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12" class="fileupload">
             <label>Upload File</label>
             <input type="file" id="fileupload"> 
@@ -154,7 +154,25 @@ export default class EditJobDetailsWebPart extends BaseClientSideWebPart <IEditJ
           <input class="btnsave" type="button" id="btnsave" value="Save">
           </div>
           </div> 
-        </div>
+
+<div class="row clsRowDiv" id="tblForaction">
+        <table>
+        <thead>
+        <tr>
+          <th>File Name</th>
+          <th>Comments</th>
+          <th>Assignee</th>
+          <th>Due Date</th>
+          <th>Status</th>
+        </tr>
+        </thead>
+        <tbody id="tbodyForactionDetails">
+        <tr>
+          <td> </td>
+        </tr>
+        </tbody>
+      </table>
+      </div>
 
 <div class="btnsubmit">
 <input class="submit" type="button" id="btnUpdate" value="Update">
@@ -324,11 +342,39 @@ async function getIscheduletaskList(Projects)
           {
           taskdetails.push({"Project":item[i].Project,"Priority":item[i].Priority,"ID":item[i].ID,"TaskName":item[i].TaskName,"AssigneeName":item[i].AssigneeName,"AssignedToEmail":item[i].AssignedToEmail,"DueDate": moment(item[i].DueDate).format("YYYY-MM-DD"),"Active":item[i].Active});
         }
+        getJobAction();
       }
       
   }).catch((error)=>
   {
     ErrorCallBack(error, "IscheduletaskList");
+  });
+}
+
+async function getJobAction()
+{
+  var htmlforaction='';
+  await sp.web.lists.getByTitle("JobAction").items.select("*").filter("ReferenceNumber eq '"+Itemid+"'").get().then(async (item)=>
+  {
+      if(item.length>0)
+      {
+          await console.log(item);  
+          //taskdetails.push(item);
+          for(var i=0;i<item.length;i++)
+          {
+            var Refnum=item[i].Id.toString();
+            const itemval = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
+            const Info = await itemval.attachmentFiles();
+            console.log(Info); 
+            htmlforaction += `<tr><td><a href="${Info[0].ServerRelativeUrl}" target="_blank">${item[i].Filename}</a></td><td>${item[i].Comments}</td><td>${item[i].AssigneeName}</td><td>${moment(item[i].DueDate).format("DD-MM-YYYY")}</td><td>${item[i].Status}</td></tr>`; 
+        }
+        $("#tbodyForactionDetails").html('');
+        $("#tbodyForactionDetails").html(htmlforaction);
+      }
+      
+  }).catch((error)=>
+  {
+    ErrorCallBack(error, "insert getJobAction");
   });
 }
 

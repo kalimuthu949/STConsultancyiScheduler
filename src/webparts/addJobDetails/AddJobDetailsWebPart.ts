@@ -36,6 +36,7 @@ var alertify: any = require("../../ExternalRef/js/alertify.min.js");
 declare var $;
 var siteURL="";
 
+
 // import "../../ExternalRef/js/sp.peoplepicker.js";
 var taskdetails=[];
 var actiondetails=[];
@@ -131,11 +132,16 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
 </table>
 </div>
 
-<div class="container Actiondetails" style="display:none"><label class="Heading" >Action</label>
-        <div class="row clsRowDiv divforaction">
+<label class="Heading Actiondetails" style="display:none">Action Details</label>
+        <div class="row clsRowDiv divforaction Actiondetails" style="display:none">
         <div class="column col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12" class="fileupload">
-            <label>Upload File</label>
-            <input type="file" id="fileupload"> 
+
+
+        <label for="file-upload" class="custom-file-upload">
+        <i class="fa fa-cloud-upload"></i> Upload Image
+      </label>
+      <input id="file-upload" name='upload_cont_img' type="file" style="display:none;">
+
           </div>
           <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
             <label>Comments</label>
@@ -153,7 +159,6 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
           <input class="btnsave" type="button" id="btnsave" value="Save">
           </div>
           </div> 
-        </div>
 
         <div class="row clsRowDiv" id="tblForaction" style="display:none">
         <table>
@@ -163,6 +168,7 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
           <th>Comments</th>
           <th>Assignee</th>
           <th>Due Date</th>
+          <th>Edit</th>
         </tr>
         </thead>
         <tbody id="tbodyForactionDetails">
@@ -209,6 +215,21 @@ $("#btnsave").click(async function()
 {
   $(".loader").show();
   await actionlist();
+});
+
+$('#fileupload').change(function() {
+  var i = $(this).prev('label').clone();
+  var file = $('#fileupload')[0].files[0].name;
+  $(this).prev('label').text(file);
+});
+
+$(document).on('click','#icon-edit',async function()
+{
+  //$(".loader").show();
+  var editdata='';
+editdata=$(this).attr("data-index");
+console.log(editdata);
+  await editactiondetails(editdata);
 });
   }
   
@@ -310,6 +331,7 @@ async function getSiteDetails(NodeID)
 
               $("#tbodyForTaskDetails").html('');
               $("#tbodyForTaskDetails").html(htmlfortask);
+              disableallfields();
 
               $("#actionassignee").html('');
               $("#actionassignee").html(htmlforassignee);
@@ -473,7 +495,7 @@ async function actionlist()
     else
     Ddate="NA";
               
-                  htmlforaction += `<tr><td>${actiondetails[i].Filename}</td><td>${actiondetails[i].Comments}</td><td>${actiondetails[i].AssigneeName}</td><td>${moment(actiondetails[i].DueDate).format("DD-MM-YYYY")}</td></tr>`; 
+                  htmlforaction += `<tr><td>${actiondetails[i].Filename}</td><td>${actiondetails[i].Comments}</td><td>${actiondetails[i].AssigneeName}</td><td>${moment(actiondetails[i].DueDate).format("DD-MM-YYYY")}</td><td><a href="#"><span id="icon-edit" data-index=${i}></span></a></td></tr>`; 
               }
 
               $("#tbodyForactionDetails").html('');
@@ -501,6 +523,19 @@ async function actionlistdetails(RefNum)
             }
               }
 
+function editactiondetails(editdata)
+{
+  for(var i=0;i<actiondetails.length;i++)
+  {
+  //$("#fileupload").files[0].name.val(actiondetails[editdata].FileContent);
+  $("#txtcmd").val(actiondetails[editdata].Comments);
+  //$("#actionassignee").val(actiondetails[editdata].AssigneeName);
+  $("#actionassignee").val(actiondetails[editdata].AssignedToEmail);
+  $("#datedue").val(actiondetails[editdata].DueDate);
+  $("#actionassignee").select2();
+
+  }
+}
 async function ErrorCallBack(error, methodname) 
 {
   try {
@@ -539,7 +574,13 @@ function AlertMessage(strMewssageEN) {
     .set("closable", false);
 }
 
-
+function disableallfields()
+{
+  $("#txtSiteName").prop('disabled',true);
+  $("#txtSiteType").prop('disabled',true);
+  $("#txtClient").prop('disabled',true);
+  $("#txtVersion").prop('disabled',true);
+}
 
 async function getusersfromsite()
 {
