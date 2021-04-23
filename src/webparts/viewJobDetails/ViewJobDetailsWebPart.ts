@@ -127,8 +127,7 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
     <th>Task Name</th>
     <th>Assignee</th>
     <th>Due Date</th>
-    <th>Active</th>
-    <th>Action</th>
+    <th>View</th>
   </tr>
   </thead>
   <tbody id="tbodyForTaskDetails">
@@ -138,16 +137,12 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
   </tbody>
 </table>
 </div>
-<div class="btnsubmit">
-<input class="submit" type="button" id="btnClose" value="Close">
-</div>
 
 <!-- Modal -->
 <div class="new-container">
   <!-- Modal -->
   <div class="modal fade" id="myModal" role="dialog">
     <div class="modal-dialog">
-    
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header">
@@ -161,11 +156,33 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
       </div>
-      
     </div>
   </div>
 </div>
 
+<label class="Heading">Action Details</label>
+<div class="row clsRowDiv" id="tblForaction">
+        <table>
+        <thead>
+        <tr>
+          <th>File Name</th>
+          <th>Comments</th>
+          <th>Assignee</th>
+          <th>Due Date</th>
+          <th>Status</th>
+        </tr>
+        </thead>
+        <tbody id="tbodyForactionDetails">
+        <tr>
+          <td> </td>
+        </tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="btnsubmit">
+      <input class="submit" type="button" id="btnClose" value="Close">
+      </div>
 </div>
 `;
 $(".loader").show();
@@ -220,7 +237,6 @@ async function getIschedulejobList(Itemid)
   await sp.web.lists.getByTitle("IscheduleJobList").items.select("*").filter("ID eq '"+Itemid+"'").get().then(async (item)=>
   {
     taskdetails=[];
-
     if(item.length > 0)
     {
         console.log(item);  
@@ -252,13 +268,13 @@ async function getIschedulejobList(Itemid)
               
               for(var i=0;i<taskdetails.length;i++)
               {
-                if(taskdetails[i].Active=="No")
-                isChecked  ="";
-                else
-                isChecked  ="checked";
+                // if(taskdetails[i].Active=="No")
+                // isChecked  ="";
+                // else
+                // isChecked  ="checked";
 
-                htmlfortask += `<tr><td>${taskdetails[i].Project}</td><td>${taskdetails[i].TaskName}</td><td>${taskdetails[i].AssigneeName}</td><td>${taskdetails[i].DueDate}</td><td><input type="checkbox" ${isChecked} class="clsactive" data-index=${i}></td><td><a href="#"><span class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" id="icon-view" data-index=${i}></span></a></td></tr>`;
-                
+                htmlfortask += `<tr><td>${taskdetails[i].Project}</td><td>${taskdetails[i].TaskName}</td><td>${taskdetails[i].AssigneeName}</td><td>${taskdetails[i].DueDate}</td><td><a href="#"><span class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" id="icon-view" data-index=${i}></span></a></td></tr>`;
+                //<td><input type="checkbox" ${isChecked} class="clsactive" data-index=${i}></td>
               }
 
           $("#selectedProjects").html('');
@@ -284,8 +300,7 @@ async function getIschedulejobList(Itemid)
 
 async function getIscheduletaskList(Projects)
 {
-  
-  await sp.web.lists.getByTitle("IscheduletaskList").items.select("*").filter("Project eq '"+Projects+"'").get().then(async (item)=>
+  await sp.web.lists.getByTitle("IscheduletaskList").items.select("*").filter("Project eq '"+Projects+"' and ReferenceNumber eq '"+Itemid+"'").get().then(async (item)=>
   {
       if(item.length>0)
       {
@@ -293,13 +308,41 @@ async function getIscheduletaskList(Projects)
           //taskdetails.push(item);
           for(var i=0;i<item.length;i++)
           {
-          taskdetails.push({"Project":item[i].Project,"Priority":item[i].Priority,"TaskName":item[i].TaskName,"AssigneeName":item[i].AssigneeName,"DueDate": moment(item[i].DueDate).format("DD-MM-YYYY"),"Active":item[i].Active,"Startdate": moment(item[i].Startdate).format("DD-MM-YYYY"),"EndDate": moment(item[i].EndDate).format("DD-MM-YYYY"),"HoldStartDate": moment(item[i].HoldStartDate).format("DD-MM-YYYY"),"HoldEndDate": moment(item[i].HoldEndDate).format("DD-MM-YYYY"),"CompletionDate": moment(item[i].CompletionDate).format("DD-MM-YYYY")});
+          taskdetails.push({"Project":item[i].Project,"Priority":item[i].Priority,"TaskName":item[i].TaskName,"AssigneeName":item[i].AssigneeName,"DueDate": moment(item[i].DueDate).format("DD-MM-YYYY"),/*"Active":item[i].Active,*/"Startdate": moment(item[i].Startdate).format("DD-MM-YYYY"),"EndDate": moment(item[i].EndDate).format("DD-MM-YYYY"),"HoldStartDate": moment(item[i].HoldStartDate).format("DD-MM-YYYY"),"HoldEndDate": moment(item[i].HoldEndDate).format("DD-MM-YYYY"),"CompletionDate": moment(item[i].CompletionDate).format("DD-MM-YYYY")});
         }
+        getJobAction();
       }
       
   }).catch((error)=>
   {
     ErrorCallBack(error, "IscheduletaskList");
+  });
+}
+
+async function getJobAction()
+{
+  var htmlforaction='';
+  await sp.web.lists.getByTitle("JobAction").items.select("*").filter("ReferenceNumber eq '"+Itemid+"'").get().then(async (item)=>
+  {
+      if(item.length>0)
+      {
+          await console.log(item);  
+          //taskdetails.push(item);
+          for(var i=0;i<item.length;i++)
+          {
+            var Refnum=item[i].Id.toString();
+            const itemval = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
+            const Info = await itemval.attachmentFiles();
+            console.log(Info); 
+            htmlforaction += `<tr><td><a href="${Info[0].ServerRelativeUrl}" target="_blank">${item[i].Filename}</a></td><td>${item[i].Comments}</td><td>${item[i].AssigneeName}</td><td>${moment(item[i].DueDate).format("DD-MM-YYYY")}</td><td>${item[i].Status}</td></tr>`; 
+        }
+        $("#tbodyForactionDetails").html('');
+        $("#tbodyForactionDetails").html(htmlforaction);
+      }
+      
+  }).catch((error)=>
+  {
+    ErrorCallBack(error, "insert getJobAction");
   });
 }
 
