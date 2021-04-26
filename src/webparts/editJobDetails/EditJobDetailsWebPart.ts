@@ -38,7 +38,9 @@ var that;
 var options='';
 var Itemid;
 var taskdetails=[];
+var actiondetails=[];
 var tval='';
+var htmlfordate='';
 
 export interface IEditJobDetailsWebPartProps {
   description: string;
@@ -135,8 +137,10 @@ export default class EditJobDetailsWebPart extends BaseClientSideWebPart <IEditJ
 <label class="Heading Actiondetails"">Action Details</label>
         <div class="row clsRowDiv divforaction Actiondetails">
         <div class="column col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12" class="fileupload">
-            <label>Upload File</label>
-            <input type="file" id="fileupload"> 
+        <label for="file-upload" class="custom-file-upload">
+        <i class="fa fa-cloud-upload"></i> Upload File
+      </label>
+      <input id="file-upload" name='upload_cont_img' type="file" style="display:none;">
           </div>
           <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
             <label>Comments</label>
@@ -152,6 +156,7 @@ export default class EditJobDetailsWebPart extends BaseClientSideWebPart <IEditJ
           </div>
           <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
           <input class="btnsave" type="button" id="btnsave" value="Save">
+          <input type="button" class="btnUpdate" id="btnUpdate" data-id="" value="Update" style="display:none">
           </div>
           </div> 
 
@@ -164,6 +169,7 @@ export default class EditJobDetailsWebPart extends BaseClientSideWebPart <IEditJ
           <th>Assignee</th>
           <th>Due Date</th>
           <th>Status</th>
+          <th>Edit</th>
         </tr>
         </thead>
         <tbody id="tbodyForactionDetails">
@@ -175,7 +181,7 @@ export default class EditJobDetailsWebPart extends BaseClientSideWebPart <IEditJ
       </div>
 
 <div class="btnsubmit">
-<input class="submit" type="button" id="btnUpdate" value="Update">
+<input class="submit" type="button" id="MbtnUpdate" value="Update">
 <input class="submit" type="button" id="btnClose" value="Close">
 </div>
 </div>
@@ -189,10 +195,81 @@ $(document).on('click','#btnClose',function()
      location.href=`${siteURL}/SitePages/JobDetails.aspx`;
 });
 
-$(document).on('click','#btnUpdate',function()
+$(document).on('click','#MbtnUpdate',function()
 {
   $(".loader").show();
   UpdateJobDetails();
+});
+
+$("#btnsave").click(async function()
+{
+  
+  if(mandatoryforaddaction())
+  {
+    $(".loader").show();
+    await actionlist(true);
+  }
+  else
+  {
+    console.log("All fileds not filled");
+    $(".loader").hide()
+  }
+
+});
+
+$('#file-upload').change(function() {
+  var i = $(this).prev('label').clone();
+  var file = $('#file-upload')[0].files[0].name;
+  $(this).prev('label').text(file);
+});
+
+$(document).on('click','.icon-edit',async function()
+{
+  //$(".loader").show();
+
+  $("#btnsave").hide();
+  $("#btnUpdate").show();
+  $("#btnUpdate").attr("data-id",$(this).attr('data-index'))
+var editdata='';
+editdata=$(this).attr("data-index");
+console.log(editdata);
+  await editactiondetails(editdata);
+});
+
+$("#btnUpdate").click(async function()
+{
+    if($(this).attr('data-id'))
+    {
+        
+        if(!$("#txtcmd").val())
+        {
+          alertify.error("Please Enter Comments");
+          return false;
+        }
+      
+        if($("#file-upload")[0].files.length>0)
+        {
+          actiondetails[$(this).attr('data-id')].Filename=$("#file-upload")[0].files[0].name;
+          actiondetails[$(this).attr('data-id')].FileContent=$("#file-upload")[0].files[0];
+        }
+
+        actiondetails[$(this).attr('data-id')].Comments=$("#txtcmd").val();
+        actiondetails[$(this).attr('data-id')].AssignedToEmail=$("#actionassignee option:selected").val();
+        actiondetails[$(this).attr('data-id')].AssigneeName=$("#actionassignee option:selected").attr("data-name");
+        actiondetails[$(this).attr('data-id')].DueDate=$("#datedue").val();
+
+        
+  $("#btnsave").show();
+  $("#btnUpdate").hide();
+  $("#btnUpdate").attr('data-id','');
+
+  await actionlist(false);
+
+    }
+    else
+    {
+
+    }
 });
 
 getusersfromsite();
@@ -292,9 +369,15 @@ async function getIschedulejobList(Itemid)
                 htmlfortask += `<tr><td>${taskdetails[i].Project}</td><td>${taskdetails[i].TaskName}</td><td><select class="clsassign" data-index=${i}>${options}</select></td><td><input type="date" class="clsduedate" data-index=${i}></td><td><input type="checkbox" ${isChecked} class="clsactive" data-index=${i}></td></tr>`;
                 
               }
+              
+              $("#selectedProjects").html('');
+              $("#selectedProjects").html(html);
 
-          $("#selectedProjects").html('');
-          $("#selectedProjects").html(html);
+              $("#actionassignee").html('');
+              $("#actionassignee").html(options);
+
+              $("#datedue").val('');
+              $("#datedue").val(moment().format("YYYY-MM-DD"));
 
           $("#tbodyForTaskDetails").html('');
           $("#tbodyForTaskDetails").html(htmlfortask);
@@ -313,6 +396,7 @@ async function getIschedulejobList(Itemid)
         });
 
          $(".clsassign").select2();
+         $("#actionassignee").select2();
 
           $('.loader').hide();
           
@@ -363,19 +447,119 @@ async function getJobAction()
           for(var i=0;i<item.length;i++)
           {
             var Refnum=item[i].Id.toString();
-            const itemval = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
-            const Info = await itemval.attachmentFiles();
-            console.log(Info); 
-            htmlforaction += `<tr><td><a href="${Info[0].ServerRelativeUrl}" target="_blank">${item[i].Filename}</a></td><td>${item[i].Comments}</td><td>${item[i].AssigneeName}</td><td>${moment(item[i].DueDate).format("DD-MM-YYYY")}</td><td>${item[i].Status}</td></tr>`; 
+            
+            const itemval = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum).attachmentFiles().then(async function(data)
+            {
+
+              var fileURL="";
+
+              for(var j=0;j<data.length;j++)
+              {
+                fileURL=data[j].ServerRelativeUrl;
+              }
+              
+              var requestactiondata = 
+              {
+                Filename:item[i].Filename,
+                FileContent:"",
+                Comments:item[i].Comments,
+                AssignedToEmail:item[i].AssignedToEmail,
+                AssigneeName:item[i].AssigneeName,
+                DueDate:moment(item[i].DueDate).format("YYYY-MM-DD"),
+                ID:Refnum,
+                FileURL:fileURL,
+                Status:item[i].Status
+              }
+  
+              htmlforaction += `<tr><td><a href="${fileURL}" target="_blank">${item[i].Filename}</a></td><td>${item[i].Comments}</td><td>${item[i].AssigneeName}</td><td>${moment(item[i].DueDate).format("DD-MM-YYYY")}</td><td>${item[i].Status}</td><td><a href="#"><span class="icon-edit" data-index=${i}></span></a></td></tr>`;
+  
+              await actiondetails.push(requestactiondata);
+            }).catch((error)=>
+            {
+              ErrorCallBack(error, "insert getJobActioninside");
+            });
+
         }
+        
         $("#tbodyForactionDetails").html('');
         $("#tbodyForactionDetails").html(htmlforaction);
+
+        var result = [];
+        $.each(actiondetails, function (i, e) {
+            var matchingItems = $.grep(result, function (item) {
+              return item.ID === e.ID;
+            });
+            if (matchingItems.length === 0){
+                result.push(e);
+            }
+        });
+
+        actiondetails=result;
       }
       
   }).catch((error)=>
   {
     ErrorCallBack(error, "insert getJobAction");
   });
+}
+
+function editactiondetails(editdata)
+{
+  
+
+  $('.custom-file-upload').text(actiondetails[editdata].Filename);
+  $("#txtcmd").val(actiondetails[editdata].Comments);
+  //$("#actionassignee").val(actiondetails[editdata].AssigneeName);
+  $("#actionassignee").val(actiondetails[editdata].AssignedToEmail);
+  $("#datedue").val(actiondetails[editdata].DueDate);
+  $("#actionassignee").select2();
+}
+
+async function actionlist(flagforupdate)
+{
+  $("#tblForaction").show();
+  var requestactiondata = {}; 
+
+  if(flagforupdate)
+  {
+   requestactiondata = {
+    //ReferenceNumber :strRefnumber,
+    Filename:$("#file-upload")[0].files[0].name,
+    FileContent:$("#file-upload")[0].files[0],
+    Comments:$("#txtcmd").val(),
+    AssignedToEmail:$("#actionassignee option:selected").val(),
+    AssigneeName:$("#actionassignee option:selected").attr("data-name"),
+    DueDate:$("#datedue").val(),
+    ID:"",
+    FileURL:"",
+    Status:"N/A"
+  } 
+  actiondetails.push(requestactiondata);
+}
+
+  console.log(actiondetails);
+
+  $('#txtcmd').val("");
+  $('#file-upload').val("");
+  $(".custom-file-upload").text('Upload File');
+  $('#datedue').val(htmlfordate);
+
+  var htmlforaction="";
+  for(var i=0;i<actiondetails.length;i++)
+              {
+    var Ddate;
+    Ddate=actiondetails[i].DueDate;
+    if(!Ddate)
+    Ddate=actiondetails[i].DueDate;
+    else
+    Ddate="NA";
+              
+                  htmlforaction += `<tr><td>${actiondetails[i].Filename}</td><td>${actiondetails[i].Comments}</td><td>${actiondetails[i].AssigneeName}</td><td>${moment(actiondetails[i].DueDate).format("DD-MM-YYYY")}</td><td>${actiondetails[i].Status}</td><td><a href="#"><span class="icon-edit" data-index=${i}></span></a></td></tr>`; 
+              }
+
+              $("#tbodyForactionDetails").html('');
+              $("#tbodyForactionDetails").html(htmlforaction);
+              $(".loader").hide();
 }
 
 async function ErrorCallBack(error, methodname) 
@@ -475,8 +659,15 @@ function disableallfields()
   
                       if(count==taskdetails.length)
                       {
-                        $(".loader").hide();
-                        AlertMessage("Job Updated successfully");
+                        
+                        //AlertMessage("Job Updated successfully");
+                        if(actiondetails.length>0)
+                        actionlistdetails(Itemid);
+                        else{
+                          $(".loader").hide();
+                          AlertMessage("Record Updated successfully");
+                        }
+                        
                       }
                       
                     })
@@ -487,5 +678,94 @@ function disableallfields()
                   }
                 
   }
+
+  function mandatoryforaddaction()
+{
+      var isAllvalueFilled=true;
+
+      if($("#file-upload")[0].files.length==0)
+      {
+        alertify.error("Please Select file");
+        isAllvalueFilled=false;
+        
+      }
+      else if(!$("#txtcmd").val())
+      {
+        alertify.error("Please enter comments");
+        isAllvalueFilled=false;
+        
+      }
+      else if(!$("#txtcmd").val())
+      {
+        alertify.error("Please enter comments");
+        isAllvalueFilled=false;
+        
+      }
+
+      return isAllvalueFilled;
+}
+
+
+async function actionlistdetails(RefNum)
+{
+            var count=0;
+            for(var i=0;i<actiondetails.length;i++)
+            {
+              
+              if(actiondetails[i].ID!="")
+              {
+                await sp.web.lists
+                .getByTitle("JobAction")
+                .items.getById(actiondetails[i].ID).update({"ReferenceNumber":RefNum,"Filename":actiondetails[i].Filename,"Comments":actiondetails[i].Comments,"AssignedToEmail":actiondetails[i].AssignedToEmail,"AssigneeName":actiondetails[i].AssigneeName,"DueDate":actiondetails[i].DueDate})
+                .then(async function (data) 
+                {
+                  count++;
+                  var Refnum=actiondetails[i].ID;
+  
+                  if(actiondetails[i].FileContent!="")
+                  {
+                    const Item = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
+                    await Item.attachmentFiles.add(actiondetails[i].Filename, actiondetails[i].FileContent);
+                  }              
+                  if(count==actiondetails.length)
+                  {
+                    $(".loader").hide();
+                    AlertMessage("Record Updated successfully");
+                  }
+                  
+                })
+                .catch(function (error) {
+                  ErrorCallBack(error, "actionlistdetails");
+                });
+              }
+              else
+              {
+                await sp.web.lists
+                .getByTitle("JobAction")
+                .items.add({"ReferenceNumber":RefNum,"Filename":actiondetails[i].Filename,"Comments":actiondetails[i].Comments,"AssignedToEmail":actiondetails[i].AssignedToEmail,"AssigneeName":actiondetails[i].AssigneeName,"DueDate":actiondetails[i].DueDate})
+                .then(async function (data) 
+                {
+                  count++;
+                  var Refnum=data.data.Id.toString();
+  
+                  if(actiondetails[i].FileContent!="")
+                  {
+                    const Item = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
+                    await Item.attachmentFiles.add(actiondetails[i].Filename, actiondetails[i].FileContent);
+                  }              
+                  if(count==actiondetails.length)
+                  {
+                    $(".loader").hide();
+                    AlertMessage("Record Updated successfully");
+                  }
+                  
+                })
+                .catch(function (error) {
+                  ErrorCallBack(error, "actionlistdetails");
+                });
+              }
+
+            }
+}
 
   

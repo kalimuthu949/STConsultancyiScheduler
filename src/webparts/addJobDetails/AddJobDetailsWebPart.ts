@@ -138,7 +138,7 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
 
 
         <label for="file-upload" class="custom-file-upload">
-        <i class="fa fa-cloud-upload"></i> Upload Image
+        <i class="fa fa-cloud-upload"></i> Upload File
       </label>
       <input id="file-upload" name='upload_cont_img' type="file" style="display:none;">
 
@@ -157,6 +157,7 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
           </div>
           <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
           <input class="btnsave" type="button" id="btnsave" value="Save">
+          <input type="button" class="btnUpdate" id="btnUpdate" data-id="" value="Update" style="display:none">
           </div>
           </div> 
 
@@ -213,24 +214,76 @@ $("#btnsubmit").click(async function()
 
 $("#btnsave").click(async function()
 {
-  $(".loader").show();
-  await actionlist();
+  
+  if(mandatoryforaddaction())
+  {
+    $(".loader").show();
+    await actionlist(true);
+  }
+  else
+  {
+    console.log("All fileds not filled");
+    $(".loader").hide()
+  }
+
 });
 
-$('#fileupload').change(function() {
+$('#file-upload').change(function() {
   var i = $(this).prev('label').clone();
-  var file = $('#fileupload')[0].files[0].name;
+  var file = $('#file-upload')[0].files[0].name;
   $(this).prev('label').text(file);
 });
 
-$(document).on('click','#icon-edit',async function()
+$(document).on('click','.icon-edit',async function()
 {
   //$(".loader").show();
-  var editdata='';
+
+  $("#btnsave").hide();
+  $("#btnUpdate").show();
+  $("#btnUpdate").attr("data-id",$(this).attr('data-index'))
+var editdata='';
 editdata=$(this).attr("data-index");
 console.log(editdata);
   await editactiondetails(editdata);
 });
+
+$("#btnUpdate").click(async function()
+{
+    if($(this).attr('data-id'))
+    {
+        
+        if(!$("#txtcmd").val())
+        {
+          alertify.error("Please Enter Comments");
+          return false;
+        }
+      
+        if($("#file-upload")[0].files.length>0)
+        {
+          actiondetails[$(this).attr('data-id')].Filename=$("#file-upload")[0].files[0].name;
+          actiondetails[$(this).attr('data-id')].FileContent=$("#file-upload")[0].files[0];
+        }
+
+        actiondetails[$(this).attr('data-id')].Comments=$("#txtcmd").val();
+        actiondetails[$(this).attr('data-id')].AssignedToEmail=$("#actionassignee option:selected").val();
+        actiondetails[$(this).attr('data-id')].AssigneeName=$("#actionassignee option:selected").attr("data-name");
+        actiondetails[$(this).attr('data-id')].DueDate=$("#datedue").val();
+
+        
+  $("#btnsave").show();
+  $("#btnUpdate").hide();
+  $("#btnUpdate").attr('data-id','');
+
+  await actionlist(false);
+
+    }
+    else
+    {
+
+    }
+});
+
+
   }
   
 
@@ -309,17 +362,6 @@ async function getSiteDetails(NodeID)
                   htmlfortask += `<tr><td>${taskdetails[i].Projects}</td><td>${taskdetails[i].Tasks}</td><td><select class="clsassign" data-index=${i}>${options}</select></td><td><input type="date" class="clsduedate" data-index=${i}></td><td><input type="checkbox" checked class="clsactive" data-index=${i}></td></tr>`;
                 
               }
-
-              var htmlforassignee='';
-              var today = new Date();
-              for(var i=0;i<1;i++)
-              {
-              
-                  htmlforassignee += `${options}`;
-                  var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-                  htmlfordate= moment(date).format("YYYY-MM-DD");
-                  console.log(htmlfordate);
-              }
               
               $("#selectedProjects").html('');
               $("#selectedProjects").html(html);
@@ -334,10 +376,10 @@ async function getSiteDetails(NodeID)
               disableallfields();
 
               $("#actionassignee").html('');
-              $("#actionassignee").html(htmlforassignee);
+              $("#actionassignee").html(options);
 
               $("#datedue").val('');
-              $("#datedue").val(htmlfordate);
+              $("#datedue").val(moment().format("YYYY-MM-DD"));
 
               $('.loader').hide();
 
@@ -412,11 +454,10 @@ async function insertischedulejoblist() {
     await sp.web.lists
     .getByTitle("ischedulejoblist")
     .items.add(requestdata)
-    .then(function (data) {
+    .then(async function (data) {
       console.log(data);
       var strRefnumber=data.data.Id.toString();
-      insertischeduletasklist(strRefnumber);
-      actionlistdetails(strRefnumber);
+      await insertischeduletasklist(strRefnumber);
       //AlertMessage("Record created successfully");
     })
     .catch(function (error) {
@@ -426,7 +467,7 @@ async function insertischedulejoblist() {
 }
 
 async function insertischeduletasklist(RefNum) {
-  var count=1;
+  var count=0;
   var requesttaskdata = {};
               for(var i=0;i<taskdetails.length;i++)
               {
@@ -452,7 +493,8 @@ async function insertischeduletasklist(RefNum) {
                     if(count==taskdetails.length)
                     {
                       $(".loader").hide();
-                      AlertMessage("Job created successfully");
+                      actionlistdetails(RefNum);
+                      //AlertMessage("Record created successfully");
                     }
                     
                   })
@@ -464,25 +506,33 @@ async function insertischeduletasklist(RefNum) {
               
 }
 
-async function actionlist()
+async function actionlist(flagforupdate)
 {
   $("#tblForaction").show();
   var requestactiondata = {}; 
 
+  if(flagforupdate)
+  {
    requestactiondata = {
     //ReferenceNumber :strRefnumber,
-    Filename:$("#fileupload")[0].files[0].name,
-    FileContent:$("#fileupload")[0].files[0],
+    Filename:$("#file-upload")[0].files[0].name,
+    FileContent:$("#file-upload")[0].files[0],
     Comments:$("#txtcmd").val(),
     AssignedToEmail:$("#actionassignee option:selected").val(),
     AssigneeName:$("#actionassignee option:selected").attr("data-name"),
     DueDate:$("#datedue").val()
   }
+
+
+ 
   actiondetails.push(requestactiondata);
+}
+
   console.log(actiondetails);
 
   $('#txtcmd').val("");
-  $('#fileupload').val("");
+  $('#file-upload').val("");
+  $(".custom-file-upload").text('Upload File');
   $('#datedue').val(htmlfordate);
 
   var htmlforaction="";
@@ -495,7 +545,7 @@ async function actionlist()
     else
     Ddate="NA";
               
-                  htmlforaction += `<tr><td>${actiondetails[i].Filename}</td><td>${actiondetails[i].Comments}</td><td>${actiondetails[i].AssigneeName}</td><td>${moment(actiondetails[i].DueDate).format("DD-MM-YYYY")}</td><td><a href="#"><span id="icon-edit" data-index=${i}></span></a></td></tr>`; 
+                  htmlforaction += `<tr><td>${actiondetails[i].Filename}</td><td>${actiondetails[i].Comments}</td><td>${actiondetails[i].AssigneeName}</td><td>${moment(actiondetails[i].DueDate).format("DD-MM-YYYY")}</td><td><a href="#"><span class="icon-edit" data-index=${i}></span></a></td></tr>`; 
               }
 
               $("#tbodyForactionDetails").html('');
@@ -505,17 +555,23 @@ async function actionlist()
 
 async function actionlistdetails(RefNum)
               {
-            for(var i=0;i<actiondetails.length;i++)
+            var count=0;
+                for(var i=0;i<actiondetails.length;i++)
             {
               await sp.web.lists
               .getByTitle("JobAction")
               .items.add({"ReferenceNumber":RefNum,"Filename":actiondetails[i].Filename,"Comments":actiondetails[i].Comments,"AssignedToEmail":actiondetails[i].AssignedToEmail,"AssigneeName":actiondetails[i].AssigneeName,"DueDate":actiondetails[i].DueDate})
-              .then(function (data) {
-                console.log(data);
+              .then(async function (data) 
+              {
+                count++;
                 var Refnum=data.data.Id.toString();
-                const Item = sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
-                Item.attachmentFiles.add(actiondetails[i].Filename, actiondetails[i].FileContent);
-                AlertMessage("Record created successfully");
+                const Item = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
+                await Item.attachmentFiles.add(actiondetails[i].Filename, actiondetails[i].FileContent);
+                if(count==actiondetails.length)
+                {
+                  AlertMessage("Record created successfully");
+                }
+                
               })
               .catch(function (error) {
                 ErrorCallBack(error, "insert JobAction");
@@ -525,16 +581,15 @@ async function actionlistdetails(RefNum)
 
 function editactiondetails(editdata)
 {
-  for(var i=0;i<actiondetails.length;i++)
-  {
-  //$("#fileupload").files[0].name.val(actiondetails[editdata].FileContent);
+
+  //$("#file-upload").files[0].name.val(actiondetails[editdata].FileContent);
+  $('.custom-file-upload').text(actiondetails[editdata].Filename);
   $("#txtcmd").val(actiondetails[editdata].Comments);
   //$("#actionassignee").val(actiondetails[editdata].AssigneeName);
   $("#actionassignee").val(actiondetails[editdata].AssignedToEmail);
   $("#datedue").val(actiondetails[editdata].DueDate);
   $("#actionassignee").select2();
 
-  }
 }
 async function ErrorCallBack(error, methodname) 
 {
@@ -601,5 +656,31 @@ async function getusersfromsite()
   }).catch(function (error) {
     ErrorCallBack(error, "getusersfromsite");
   });
+}
+
+function mandatoryforaddaction()
+{
+      var isAllvalueFilled=true;
+
+      if($("#file-upload")[0].files.length==0)
+      {
+        alertify.error("Please Select file");
+        isAllvalueFilled=false;
+        
+      }
+      else if(!$("#txtcmd").val())
+      {
+        alertify.error("Please enter comments");
+        isAllvalueFilled=false;
+        
+      }
+      else if(!$("#txtcmd").val())
+      {
+        alertify.error("Please enter comments");
+        isAllvalueFilled=false;
+        
+      }
+
+      return isAllvalueFilled;
 }
 
