@@ -40,7 +40,6 @@ var Itemid;
 var taskdetails=[];
 var actiondetails=[];
 var tval='';
-var htmlfordate='';
 
 export interface IEditJobDetailsWebPartProps {
   description: string;
@@ -123,7 +122,7 @@ export default class EditJobDetailsWebPart extends BaseClientSideWebPart <IEditJ
     <th>Task Name</th>
     <th>Assignee</th>
     <th>Due Date</th>
-    <th>Active</th>
+    <th>Action</th>
   </tr>
   </thead>
   <tbody id="tbodyForTaskDetails">
@@ -141,6 +140,10 @@ export default class EditJobDetailsWebPart extends BaseClientSideWebPart <IEditJ
         <i class="fa fa-cloud-upload"></i> Upload File
       </label>
       <input id="file-upload" name='upload_cont_img' type="file" style="display:none;">
+          </div>
+          <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+            <label>Title</label>
+            <input type="text" id="txttitle">
           </div>
           <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
             <label>Comments</label>
@@ -165,10 +168,12 @@ export default class EditJobDetailsWebPart extends BaseClientSideWebPart <IEditJ
         <thead>
         <tr>
           <th>File Name</th>
+          <th>Title</th>
           <th>Comments</th>
           <th>Assignee</th>
           <th>Due Date</th>
           <th>Status</th>
+          <th>Action</th>
           <th>Edit</th>
         </tr>
         </thead>
@@ -198,7 +203,7 @@ $(document).on('click','#btnClose',function()
 $(document).on('click','#MbtnUpdate',function()
 {
   $(".loader").show();
-  UpdateJobDetails();
+  UpdateIscheduleLists();
 });
 
 $("#btnsave").click(async function()
@@ -207,7 +212,7 @@ $("#btnsave").click(async function()
   if(mandatoryforaddaction())
   {
     $(".loader").show();
-    await actionlist(true);
+    await getactiondetails(true);
   }
   else
   {
@@ -252,7 +257,7 @@ $("#btnUpdate").click(async function()
           actiondetails[$(this).attr('data-id')].Filename=$("#file-upload")[0].files[0].name;
           actiondetails[$(this).attr('data-id')].FileContent=$("#file-upload")[0].files[0];
         }
-
+        actiondetails[$(this).attr('data-id')].Title=$("#txttitle").val();
         actiondetails[$(this).attr('data-id')].Comments=$("#txtcmd").val();
         actiondetails[$(this).attr('data-id')].AssignedToEmail=$("#actionassignee option:selected").val();
         actiondetails[$(this).attr('data-id')].AssigneeName=$("#actionassignee option:selected").attr("data-name");
@@ -263,7 +268,7 @@ $("#btnUpdate").click(async function()
   $("#btnUpdate").hide();
   $("#btnUpdate").attr('data-id','');
 
-  await actionlist(false);
+  await getactiondetails(false);
 
     }
     else
@@ -431,7 +436,7 @@ async function getIscheduletaskList(Projects)
       
   }).catch((error)=>
   {
-    ErrorCallBack(error, "IscheduletaskList");
+    ErrorCallBack(error, "getIscheduletaskList");
   });
 }
 
@@ -462,21 +467,28 @@ async function getJobAction()
               {
                 Filename:item[i].Filename,
                 FileContent:"",
+                Title:item[i].Title,
                 Comments:item[i].Comments,
                 AssignedToEmail:item[i].AssignedToEmail,
                 AssigneeName:item[i].AssigneeName,
                 DueDate:moment(item[i].DueDate).format("YYYY-MM-DD"),
+                Active:item[i].Active,
                 ID:Refnum,
                 FileURL:fileURL,
                 Status:item[i].Status
               }
-  
-              htmlforaction += `<tr><td><a href="${fileURL}" target="_blank">${item[i].Filename}</a></td><td>${item[i].Comments}</td><td>${item[i].AssigneeName}</td><td>${moment(item[i].DueDate).format("DD-MM-YYYY")}</td><td>${item[i].Status}</td><td><a href="#"><span class="icon-edit" data-index=${i}></span></a></td></tr>`;
+              var isChecked  ="checked";
+                if(item[i].Active=="No")
+                isChecked  ="";
+                else
+                isChecked  ="checked";
+
+              htmlforaction += `<tr><td><a href="${fileURL}" target="_blank">${item[i].Filename}</a></td><td>${item[i].Title}</td><td>${item[i].Comments}</td><td>${item[i].AssigneeName}</td><td>${moment(item[i].DueDate).format("DD-MM-YYYY")}</td><td>${item[i].Status}</td><td><input type="checkbox" ${isChecked} class="clsaction" data-index=${i}></td><td><a href="#"><span class="icon-edit" data-index=${i}></span></a></td></tr>`;
   
               await actiondetails.push(requestactiondata);
             }).catch((error)=>
             {
-              ErrorCallBack(error, "insert getJobActioninside");
+              ErrorCallBack(error, "getJobAction");
             });
 
         }
@@ -505,9 +517,8 @@ async function getJobAction()
 
 function editactiondetails(editdata)
 {
-  
-
   $('.custom-file-upload').text(actiondetails[editdata].Filename);
+  $("#txttitle").val(actiondetails[editdata].Title);
   $("#txtcmd").val(actiondetails[editdata].Comments);
   //$("#actionassignee").val(actiondetails[editdata].AssigneeName);
   $("#actionassignee").val(actiondetails[editdata].AssignedToEmail);
@@ -515,7 +526,7 @@ function editactiondetails(editdata)
   $("#actionassignee").select2();
 }
 
-async function actionlist(flagforupdate)
+async function getactiondetails(flagforupdate)
 {
   $("#tblForaction").show();
   var requestactiondata = {}; 
@@ -526,10 +537,12 @@ async function actionlist(flagforupdate)
     //ReferenceNumber :strRefnumber,
     Filename:$("#file-upload")[0].files[0].name,
     FileContent:$("#file-upload")[0].files[0],
+    Title:$("#txttitle").val(),
     Comments:$("#txtcmd").val(),
     AssignedToEmail:$("#actionassignee option:selected").val(),
     AssigneeName:$("#actionassignee option:selected").attr("data-name"),
     DueDate:$("#datedue").val(),
+    Active:$("#clsaction").val(),
     ID:"",
     FileURL:"",
     Status:"N/A"
@@ -539,10 +552,11 @@ async function actionlist(flagforupdate)
 
   console.log(actiondetails);
 
+  $('#txttitle').val("");
   $('#txtcmd').val("");
   $('#file-upload').val("");
   $(".custom-file-upload").text('Upload File');
-  $('#datedue').val(htmlfordate);
+  $('#datedue').val(moment().format("YYYY-MM-DD"));
 
   var htmlforaction="";
   for(var i=0;i<actiondetails.length;i++)
@@ -553,14 +567,142 @@ async function actionlist(flagforupdate)
     Ddate=actiondetails[i].DueDate;
     else
     Ddate="NA";
-              
-                  htmlforaction += `<tr><td>${actiondetails[i].Filename}</td><td>${actiondetails[i].Comments}</td><td>${actiondetails[i].AssigneeName}</td><td>${moment(actiondetails[i].DueDate).format("DD-MM-YYYY")}</td><td>${actiondetails[i].Status}</td><td><a href="#"><span class="icon-edit" data-index=${i}></span></a></td></tr>`; 
+    var isChecked  ="checked";
+    if(actiondetails[i].Active=="No")
+    isChecked  ="";
+    else
+    isChecked  ="checked";
+                  htmlforaction += `<tr><td>${actiondetails[i].Filename}</td><td>${actiondetails[i].Title}</td><td>${actiondetails[i].Comments}</td><td>${actiondetails[i].AssigneeName}</td><td>${moment(actiondetails[i].DueDate).format("DD-MM-YYYY")}</td><td>${actiondetails[i].Status}</td><td><input type="checkbox" ${isChecked} class="clsaction" data-index=${i}></td><td><a href="#"><span class="icon-edit" data-index=${i}></span></a></td></tr>`; 
               }
 
               $("#tbodyForactionDetails").html('');
               $("#tbodyForactionDetails").html(htmlforaction);
               $(".loader").hide();
 }
+
+async function Insertactiondetails(RefNum)
+{
+  $('.clsaction').each(function()
+  {
+    actiondetails[$(this).attr('data-index')].Active=($(this).is(':checked')? "Yes" : "No");
+  });
+            var count=0;
+            for(var i=0;i<actiondetails.length;i++)
+            {
+              
+              if(actiondetails[i].ID!="")
+              {
+                await sp.web.lists
+                .getByTitle("JobAction")
+                .items.getById(actiondetails[i].ID).update({"ReferenceNumber":RefNum,"Filename":actiondetails[i].Filename,"Title":actiondetails[i].Title,"Comments":actiondetails[i].Comments,"AssignedToEmail":actiondetails[i].AssignedToEmail,"AssigneeName":actiondetails[i].AssigneeName,"DueDate":actiondetails[i].DueDate,"Active":actiondetails[i].Active})
+                .then(async function (data) 
+                {
+                  count++;
+                  var Refnum=actiondetails[i].ID;
+  
+                  if(actiondetails[i].FileContent!="")
+                  {
+                    const Item = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
+                    await Item.attachmentFiles.add(actiondetails[i].Filename, actiondetails[i].FileContent);
+                  }              
+                  if(count==actiondetails.length)
+                  {
+                    $(".loader").hide();
+                    AlertMessage("Record Updated successfully");
+                  }
+                  
+                })
+                .catch(function (error) {
+                  ErrorCallBack(error, "Insertactiondetails");
+                });
+              }
+              else
+              {
+                await sp.web.lists
+                .getByTitle("JobAction")
+                .items.add({"ReferenceNumber":RefNum,"Filename":actiondetails[i].Filename,"Title":actiondetails[i].Title,"Comments":actiondetails[i].Comments,"AssignedToEmail":actiondetails[i].AssignedToEmail,"AssigneeName":actiondetails[i].AssigneeName,"DueDate":actiondetails[i].DueDate,"Active":actiondetails[i].Active})
+                .then(async function (data) 
+                {
+                  count++;
+                  var Refnum=data.data.Id.toString();
+  
+                  if(actiondetails[i].FileContent!="")
+                  {
+                    const Item = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
+                    await Item.attachmentFiles.add(actiondetails[i].Filename, actiondetails[i].FileContent);
+                  }              
+                  if(count==actiondetails.length)
+                  {
+                    $(".loader").hide();
+                    AlertMessage("Record Updated successfully");
+                  }
+                  
+                })
+                .catch(function (error) {
+                  ErrorCallBack(error, "actionlistdetails");
+                });
+              }
+
+            }
+}
+
+async function UpdateIscheduleLists() {
+
+  $('.clsduedate').each(function()
+  {
+  if($(this).val()!="")
+  {
+  taskdetails[$(this).attr('data-index')].DueDate=$(this).val();
+  }
+  });
+  $('.clsactive').each(function()
+  {
+  taskdetails[$(this).attr('data-index')].Active=($(this).is(':checked')? "Yes" : "No");
+  });
+  $('.clsassign').each(function()
+  {
+      taskdetails[$(this).attr('data-index')].AssignedToEmail=$(this).val();
+      taskdetails[$(this).attr('data-index')].AssigneeName=$(this).find("option:selected").attr("data-name");
+  });
+
+    var count=1;
+    var requesttaskdata = {};
+                for(var i=0;i<taskdetails.length;i++)
+                {
+                  var Id=taskdetails[i].ID;
+                  requesttaskdata = {
+                      DueDate: taskdetails[i].DueDate,
+                      Active: taskdetails[i].Active,
+                      AssignedToEmail: taskdetails[i].AssignedToEmail,
+                      AssigneeName: taskdetails[i].AssigneeName
+                    };
+                    await sp.web.lists
+                      .getByTitle("ischeduletasklist")
+                       .items.getById(Id)
+                       .update(requesttaskdata).then(function (data) {
+                      count++;
+  
+                      if(count==taskdetails.length)
+                      {
+                        
+                        //AlertMessage("Job Updated successfully");
+                        if(actiondetails.length>0)
+                        Insertactiondetails(Itemid);
+                        else{
+                          $(".loader").hide();
+                          AlertMessage("Record Updated successfully");
+                        }
+                        
+                      }
+                      
+                    })
+                    .catch(function (error) {
+                      ErrorCallBack(error, "UpdateIscheduleLists");
+                    });
+                    
+                  }
+                
+  }
 
 async function ErrorCallBack(error, methodname) 
 {
@@ -621,64 +763,6 @@ function disableallfields()
   $("#txtVersion").prop('disabled',true);
 }
 
-   async function UpdateJobDetails() {
-
-  $('.clsduedate').each(function()
-  {
-  if($(this).val()!="")
-  {
-  taskdetails[$(this).attr('data-index')].DueDate=$(this).val();
-  }
-  });
-  $('.clsactive').each(function()
-  {
-  taskdetails[$(this).attr('data-index')].Active=($(this).is(':checked')? "Yes" : "No");
-  });
-  $('.clsassign').each(function()
-  {
-      taskdetails[$(this).attr('data-index')].AssignedToEmail=$(this).val();
-      taskdetails[$(this).attr('data-index')].AssigneeName=$(this).find("option:selected").attr("data-name");
-  });
-
-    var count=1;
-    var requesttaskdata = {};
-                for(var i=0;i<taskdetails.length;i++)
-                {
-                  var Id=taskdetails[i].ID;
-                  requesttaskdata = {
-                      DueDate: taskdetails[i].DueDate,
-                      Active: taskdetails[i].Active,
-                      AssignedToEmail: taskdetails[i].AssignedToEmail,
-                      AssigneeName: taskdetails[i].AssigneeName
-                    };
-                    await sp.web.lists
-                      .getByTitle("ischeduletasklist")
-                       .items.getById(Id)
-                       .update(requesttaskdata).then(function (data) {
-                      count++;
-  
-                      if(count==taskdetails.length)
-                      {
-                        
-                        //AlertMessage("Job Updated successfully");
-                        if(actiondetails.length>0)
-                        actionlistdetails(Itemid);
-                        else{
-                          $(".loader").hide();
-                          AlertMessage("Record Updated successfully");
-                        }
-                        
-                      }
-                      
-                    })
-                    .catch(function (error) {
-                      ErrorCallBack(error, "insert ischeduletasklist");
-                    });
-                    
-                  }
-                
-  }
-
   function mandatoryforaddaction()
 {
       var isAllvalueFilled=true;
@@ -695,7 +779,7 @@ function disableallfields()
         isAllvalueFilled=false;
         
       }
-      else if(!$("#txtcmd").val())
+      else if(!$("#txttitle").val())
       {
         alertify.error("Please enter comments");
         isAllvalueFilled=false;
@@ -704,68 +788,3 @@ function disableallfields()
 
       return isAllvalueFilled;
 }
-
-
-async function actionlistdetails(RefNum)
-{
-            var count=0;
-            for(var i=0;i<actiondetails.length;i++)
-            {
-              
-              if(actiondetails[i].ID!="")
-              {
-                await sp.web.lists
-                .getByTitle("JobAction")
-                .items.getById(actiondetails[i].ID).update({"ReferenceNumber":RefNum,"Filename":actiondetails[i].Filename,"Comments":actiondetails[i].Comments,"AssignedToEmail":actiondetails[i].AssignedToEmail,"AssigneeName":actiondetails[i].AssigneeName,"DueDate":actiondetails[i].DueDate})
-                .then(async function (data) 
-                {
-                  count++;
-                  var Refnum=actiondetails[i].ID;
-  
-                  if(actiondetails[i].FileContent!="")
-                  {
-                    const Item = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
-                    await Item.attachmentFiles.add(actiondetails[i].Filename, actiondetails[i].FileContent);
-                  }              
-                  if(count==actiondetails.length)
-                  {
-                    $(".loader").hide();
-                    AlertMessage("Record Updated successfully");
-                  }
-                  
-                })
-                .catch(function (error) {
-                  ErrorCallBack(error, "actionlistdetails");
-                });
-              }
-              else
-              {
-                await sp.web.lists
-                .getByTitle("JobAction")
-                .items.add({"ReferenceNumber":RefNum,"Filename":actiondetails[i].Filename,"Comments":actiondetails[i].Comments,"AssignedToEmail":actiondetails[i].AssignedToEmail,"AssigneeName":actiondetails[i].AssigneeName,"DueDate":actiondetails[i].DueDate})
-                .then(async function (data) 
-                {
-                  count++;
-                  var Refnum=data.data.Id.toString();
-  
-                  if(actiondetails[i].FileContent!="")
-                  {
-                    const Item = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
-                    await Item.attachmentFiles.add(actiondetails[i].Filename, actiondetails[i].FileContent);
-                  }              
-                  if(count==actiondetails.length)
-                  {
-                    $(".loader").hide();
-                    AlertMessage("Record Updated successfully");
-                  }
-                  
-                })
-                .catch(function (error) {
-                  ErrorCallBack(error, "actionlistdetails");
-                });
-              }
-
-            }
-}
-
-  
