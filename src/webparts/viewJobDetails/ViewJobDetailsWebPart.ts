@@ -43,6 +43,7 @@ var that;
 var Itemid;
 var taskdetails=[];
 var tval='';
+var YesChecked="Yes";
 
 
 var siteURL="";
@@ -166,6 +167,7 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
         <thead>
         <tr>
           <th>File Name</th>
+          <th>Title</th>
           <th>Comments</th>
           <th>Assignee</th>
           <th>Due Date</th>
@@ -272,7 +274,6 @@ async function getIschedulejobList(Itemid)
                 // isChecked  ="";
                 // else
                 // isChecked  ="checked";
-
                 htmlfortask += `<tr><td>${taskdetails[i].Project}</td><td>${taskdetails[i].TaskName}</td><td>${taskdetails[i].AssigneeName}</td><td>${taskdetails[i].DueDate}</td><td><a href="#"><span class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" id="icon-view" data-index=${i}></span></a></td></tr>`;
                 //<td><input type="checkbox" ${isChecked} class="clsactive" data-index=${i}></td>
               }
@@ -300,7 +301,7 @@ async function getIschedulejobList(Itemid)
 
 async function getIscheduletaskList(Projects)
 {
-  await sp.web.lists.getByTitle("IscheduletaskList").items.select("*").filter("Project eq '"+Projects+"' and ReferenceNumber eq '"+Itemid+"'").get().then(async (item)=>
+  await sp.web.lists.getByTitle("IscheduletaskList").items.select("*").filter("Project eq '"+Projects+"' and ReferenceNumber eq '"+Itemid+"' and Active eq '"+YesChecked+"'").get().then(async (item)=>
   {
       if(item.length>0)
       {
@@ -315,7 +316,7 @@ async function getIscheduletaskList(Projects)
       
   }).catch((error)=>
   {
-    ErrorCallBack(error, "IscheduletaskList");
+    ErrorCallBack(error, "getIscheduletaskList");
   });
 }
 
@@ -334,7 +335,7 @@ async function getJobAction()
             const itemval = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
             const Info = await itemval.attachmentFiles();
             console.log(Info); 
-            htmlforaction += `<tr><td><a href="${Info[0].ServerRelativeUrl}" target="_blank">${item[i].Filename}</a></td><td>${item[i].Comments}</td><td>${item[i].AssigneeName}</td><td>${moment(item[i].DueDate).format("DD-MM-YYYY")}</td><td>${item[i].Status}</td></tr>`; 
+            htmlforaction += `<tr><td><a href="${Info[0].ServerRelativeUrl}" target="_blank">${item[i].Filename}</a></td><td>${item[i].Title}</td><td>${item[i].Comments}</td><td>${item[i].AssigneeName}</td><td>${moment(item[i].DueDate).format("DD-MM-YYYY")}</td><td>${item[i].Status}</td></tr>`; 
         }
         $("#tbodyForactionDetails").html('');
         $("#tbodyForactionDetails").html(htmlforaction);
@@ -342,8 +343,54 @@ async function getJobAction()
       
   }).catch((error)=>
   {
-    ErrorCallBack(error, "insert getJobAction");
+    ErrorCallBack(error, "getJobAction");
   });
+}
+
+function viewtaskdetails(viewdata)
+{
+  var htmlfortaskdetails='';
+  for(var i=0;i<taskdetails.length;i++)
+  {
+    var Sdate,Edate,HoldSdate,HoldEdate,Completiondate;
+
+    Sdate=taskdetails[viewdata].Startdate;
+    if(!Sdate)
+    Sdate=taskdetails[viewdata].Startdate;
+    else
+    Sdate="NA";
+
+    Edate=taskdetails[viewdata].EndDate;
+    if(!Edate)
+    Edate=taskdetails[viewdata].EndDate;
+    else
+    Edate="NA";
+
+    HoldSdate=taskdetails[viewdata].HoldStartDate;
+    if(!HoldSdate)
+    HoldSdate=taskdetails[viewdata].HoldStartDate;
+    else
+    HoldSdate="NA";
+    
+    HoldEdate=taskdetails[viewdata].HoldEndDate;
+    if(!HoldEdate)
+    HoldEdate=taskdetails[viewdata].HoldEndDate;
+    else
+    HoldEdate="NA";
+
+    Completiondate=taskdetails[viewdata].CompletionDate;
+    if(!Sdate)
+    Completiondate=taskdetails[viewdata].CompletionDate;
+    else
+    Completiondate="NA";
+
+    htmlfortaskdetails = `<label>Project Name</label> : <p>${taskdetails[viewdata].Project}</p><label>Task Name</label> : <p>${taskdetails[viewdata].TaskName}</p><label>Assignee Name</label> : <p>${taskdetails[viewdata].AssigneeName}</p><label>Due Date</label> : <p>${taskdetails[viewdata].DueDate}</p><label>Start Date</label> : <p>${Sdate}</p><label>End Date</label> : <p>${Edate}</p><label>Hold Start Date</label> : <p>${HoldSdate}</p><label>Hold End Date</label> : <p>${HoldEdate}</p><label>Completion Date</label> : <p>${Completiondate}</p>`;
+    
+  } 
+
+$("#selectedtaskdetails").html('');
+$("#selectedtaskdetails").html(htmlfortaskdetails);
+$('.loader').hide();
 }
 
 async function ErrorCallBack(error, methodname) 
@@ -405,49 +452,4 @@ function disableallfields()
   $("#txtClient").prop('disabled',true);
   $("#txtVersion").prop('disabled',true);
   $(".clsactive").prop('disabled',true);
-}
-function viewtaskdetails(viewdata)
-{
-  var htmlfortaskdetails='';
-  for(var i=0;i<taskdetails.length;i++)
-  {
-    var Sdate,Edate,HoldSdate,HoldEdate,Completiondate;
-
-    Sdate=taskdetails[viewdata].Startdate;
-    if(!Sdate)
-    Sdate=taskdetails[viewdata].Startdate;
-    else
-    Sdate="NA";
-
-    Edate=taskdetails[viewdata].EndDate;
-    if(!Edate)
-    Edate=taskdetails[viewdata].EndDate;
-    else
-    Edate="NA";
-
-    HoldSdate=taskdetails[viewdata].HoldStartDate;
-    if(!HoldSdate)
-    HoldSdate=taskdetails[viewdata].HoldStartDate;
-    else
-    HoldSdate="NA";
-    
-    HoldEdate=taskdetails[viewdata].HoldEndDate;
-    if(!HoldEdate)
-    HoldEdate=taskdetails[viewdata].HoldEndDate;
-    else
-    HoldEdate="NA";
-
-    Completiondate=taskdetails[viewdata].CompletionDate;
-    if(!Sdate)
-    Completiondate=taskdetails[viewdata].CompletionDate;
-    else
-    Completiondate="NA";
-
-    htmlfortaskdetails = `<label>Project Name</label> : <p>${taskdetails[viewdata].Project}</p><label>Task Name</label> : <p>${taskdetails[viewdata].TaskName}</p><label>Assignee Name</label> : <p>${taskdetails[viewdata].AssigneeName}</p><label>Due Date</label> : <p>${taskdetails[viewdata].DueDate}</p><label>Start Date</label> : <p>${Sdate}</p><label>End Date</label> : <p>${Edate}</p><label>Hold Start Date</label> : <p>${HoldSdate}</p><label>Hold End Date</label> : <p>${HoldEdate}</p><label>Completion Date</label> : <p>${Completiondate}</p>`;
-    
-  } 
-
-$("#selectedtaskdetails").html('');
-$("#selectedtaskdetails").html(htmlfortaskdetails);
-$('.loader').hide();
 }

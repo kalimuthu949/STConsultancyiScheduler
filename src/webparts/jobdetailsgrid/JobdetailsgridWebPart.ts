@@ -99,7 +99,12 @@ $("#btnCreate").click(function()
      {
           location.href=`${siteURL}/SitePages/ViewJob.aspx?Itemid=${$(this).attr('data-id')}`;
      });
+     $(document).on('click','.editjob',function()
+     {
+          location.href=`${siteURL}/SitePages/EditJob.aspx?Itemid=${$(this).attr('data-id')}`;
+     });
     }
+    
 
   protected get dataVersion(): Version {
     return Version.parse('1.0');
@@ -149,7 +154,7 @@ async function getIScheduleJoblist(){
       htmldata = items[i].Projects
     }
     
-      html += `<tr><td>${i+1}</td><td>${items[i].Client}</td><td>${items[i].SiteName}<td>${items[i].NodeID}</td>${htmldata}<td>${items[i].SiteType}<td>${htmldata}</td> <td>${items[i].VersionID}</td><td><a href="#" class="viewjob" data-id=${items[i].ID}><span class="icon-img icon-view"></span></a></td></tr>`
+      html += `<tr><td>${i+1}</td><td>${items[i].Client}</td><td>${items[i].SiteName}<td>${items[i].NodeID}</td>${htmldata}<td>${items[i].SiteType}<td>${htmldata}</td> <td>${items[i].VersionID}</td><td><a href="#" class="viewjob" data-id=${items[i].ID}><span class="icon-img icon-view"></a><a href="#" class="editjob" data-id=${items[i].ID}><span class="icon-img icon-edit"></a></td></tr>`
 
     }
     $("#IScheduleJoblist").html("");

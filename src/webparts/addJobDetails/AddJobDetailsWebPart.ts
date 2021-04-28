@@ -65,12 +65,26 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
     <span style="display:none" class="loader">
 <img class="loader-spin"/>
 </span>
-    <div class="container ischedule" ><label class="Heading">Site Details</label>
+<div class="container ischedule" ><label class="Heading">Ischedule</label>
         <div class="row clsRowDiv">
           <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
             <label>Node ID</label>
-            <input type="text" id="txtNode"> 
+            <input type="text" id="clkNode"> 
             <div class ="generate-fields" id="generateFields"></div>
+          </div>
+          <div class="column col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+            <label>Job Detail</label>
+            <select id="drpCategory" class="drpCategory">
+            </select>
+          </div>
+          </div>
+          </div>
+
+    <div class="container ischedule"><label class="Heading divsitedetails" style="display:none">Site Details</label>
+        <div class="row clsRowDiv divsitedetails" style="display:none">
+          <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+            <label>Node ID</label>
+            <input type="text" id="txtNode"> 
           </div>
           <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
             <label>Site Name</label>
@@ -121,7 +135,7 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
     <th>Task Name</th>
     <th>Assignee</th>
     <th>Due Date</th>
-    <th>Active</th>
+    <th>Action</th>
   </tr>
   </thead>
   <tbody id="tbodyForTaskDetails">
@@ -142,6 +156,10 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
       </label>
       <input id="file-upload" name='upload_cont_img' type="file" style="display:none;">
 
+          </div>
+          <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+            <label>Title</label>
+            <input type="text" id="txttitle">
           </div>
           <div class="column col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
             <label>Comments</label>
@@ -166,6 +184,7 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
         <thead>
         <tr>
           <th>File Name</th>
+          <th>Title</th>
           <th>Comments</th>
           <th>Assignee</th>
           <th>Due Date</th>
@@ -195,15 +214,19 @@ $(document).on('click','#btnClose',function()
 
 
 getusersfromsite();
-// $("#txtNode").blur(function()
-// {
-//   getSiteDetails($("#txtNode").val());
-// });
+
 
 $("#generateFields").click(async function()
 {
   $(".loader").show();
-  await getSiteDetails($("#txtNode").val());
+  await getIscheduledetails($("#clkNode").val());
+});
+
+$("#drpCategory").change(async function()
+{
+var Siteid='';
+Siteid=$("#drpCategory option:selected").attr("data-id");
+await getSiteDetails(Siteid);
 });
 
 $("#btnsubmit").click(async function()
@@ -218,7 +241,7 @@ $("#btnsave").click(async function()
   if(mandatoryforaddaction())
   {
     $(".loader").show();
-    await actionlist(true);
+    await getactiondetails(true);
   }
   else
   {
@@ -274,7 +297,7 @@ $("#btnUpdate").click(async function()
   $("#btnUpdate").hide();
   $("#btnUpdate").attr('data-id','');
 
-  await actionlist(false);
+  await getactiondetails(false);
 
     }
     else
@@ -317,10 +340,32 @@ $("#btnUpdate").click(async function()
 function test()
 {
 }
-
-async function getSiteDetails(NodeID)
+async function getIscheduledetails(NodeID)
 {
   await sp.web.lists.getByTitle("SiteMasterList").items.select("*").filter("NodeID eq '"+NodeID+"'").get().then(async (item)=>
+  { 
+    var htmlforCategory="";
+    if(item.length > 0)
+    {
+      htmlforCategory=`<option>Select</option>`;
+    for(var i=0;i<item.length;i++)
+    {
+    
+        htmlforCategory += `<option data-name="${item[i].Category}" data-id="${item[i].ID}">${item[i].NodeID} - Version${item[i].VersionID} (${(item[i].Category)})</option>`;
+    }
+  }
+  $("#drpCategory").html('');
+  $("#drpCategory").html(htmlforCategory);
+  $(".loader").hide()
+  }).catch((error)=>
+  {
+    ErrorCallBack(error, "getSiteDetails");
+  });
+}
+
+async function getSiteDetails(SiteId)
+{
+  await sp.web.lists.getByTitle("SiteMasterList").items.select("*").filter("ID eq '"+SiteId+"'").get().then(async (item)=>
   {
     taskdetails=[];
     
@@ -332,8 +377,6 @@ async function getSiteDetails(NodeID)
           $("#txtSiteType").val(item[0].SiteType);
           $("#txtVersion").val(item[0].VersionID);
           $("#txtClient").val(item[0].Client);
-          // $("#selectedProjects").val(item[0].Category);
-          //console.log(item[0].Category);
           if(item[0].Category)
           {
               var html='';
@@ -359,10 +402,10 @@ async function getSiteDetails(NodeID)
               for(var i=0;i<taskdetails.length;i++)
               {
               
-                  htmlfortask += `<tr><td>${taskdetails[i].Projects}</td><td>${taskdetails[i].Tasks}</td><td><select class="clsassign" data-index=${i}>${options}</select></td><td><input type="date" class="clsduedate" data-index=${i}></td><td><input type="checkbox" checked class="clsactive" data-index=${i}></td></tr>`;
+                  htmlfortask += `<tr><td>${taskdetails[i].Projects}</td><td>${taskdetails[i].Tasks}</td><td><select class="clsassign" data-index=${i}>${options}</select></td><td><input type="date" class="clsduedate" value="${moment().format("YYYY-MM-DD")}" data-index=${i}></td><td><input type="checkbox" checked class="clsactive" data-index=${i}></td></tr>`;
                 
               }
-              
+              $(".divsitedetails").show();
               $("#selectedProjects").html('');
               $("#selectedProjects").html(html);
 
@@ -409,13 +452,13 @@ async function getTaskDetails(Projects)
           //taskdetails.push(item);
           for(var i=0;i<item.length;i++)
           {
-          taskdetails.push({"Projects":item[i].Projects,"Priority":item[i].Priority,"Tasks":item[i].Tasks,"Assignee":"","AssigneeName":"","DueDate": null,"Active":""});
+          taskdetails.push({"ID":item[i].ID,"Division":item[i].Division,"BusinessDivision":item[i].BusinessDivision,"Projects":item[i].Projects,"Priority":item[i].Priority,"Tasks":item[i].Tasks,"Assignee":"","AssigneeName":"","DueDate": null,"Active":""});
         }
       }
       
   }).catch((error)=>
   {
-    ErrorCallBack(error, "getSiteDetails");
+    ErrorCallBack(error, "getTaskDetails");
   });
 }
 
@@ -448,7 +491,8 @@ async function insertischedulejoblist() {
       SiteType: $("#txtSiteType").val(),
       Client: $("#txtClient").val(),
       VersionID: $("#txtVersion").val(),
-      Projects: projects
+      Projects: projects,
+
     };
 
     await sp.web.lists
@@ -461,17 +505,20 @@ async function insertischedulejoblist() {
       //AlertMessage("Record created successfully");
     })
     .catch(function (error) {
-      ErrorCallBack(error, "insert ischedulejoblist");
+      ErrorCallBack(error, "insertischedulejoblist");
     });
     
 }
 
 async function insertischeduletasklist(RefNum) {
   var count=0;
+
   var requesttaskdata = {};
               for(var i=0;i<taskdetails.length;i++)
               {
-                
+                var Percentage="0";
+                var BalancePercent="100";
+                var taskid=taskdetails[i].ID.toString();
                 requesttaskdata = {
 
                     ReferenceNumber :RefNum,
@@ -481,7 +528,12 @@ async function insertischeduletasklist(RefNum) {
                     DueDate: taskdetails[i].DueDate,
                     Active: taskdetails[i].Active,
                     AssignedToEmail: taskdetails[i].Assignee,
-                    AssigneeName: taskdetails[i].AssigneeName
+                    AssigneeName: taskdetails[i].AssigneeName,
+                    TaskID: taskid,
+                    Division: taskdetails[i].Division,
+                    BusinessDivision: taskdetails[i].BusinessDivision,
+                    Percentage:Percentage,
+                    BalancePercent:BalancePercent
                   };
                   await sp.web.lists
                   .getByTitle("ischeduletasklist")
@@ -492,21 +544,27 @@ async function insertischeduletasklist(RefNum) {
 
                     if(count==taskdetails.length)
                     {
-                      $(".loader").hide();
-                      actionlistdetails(RefNum);
+                      
+                      if(actiondetails.length>0)
+                      Insertactiondetails(RefNum);
+                      else
+                      {
+                        $(".loader").hide();
+                        AlertMessage("Record created successfully");
+                      }
                       //AlertMessage("Record created successfully");
                     }
                     
                   })
                   .catch(function (error) {
-                    ErrorCallBack(error, "insert ischeduletasklist");
+                    ErrorCallBack(error, "insertischeduletasklist");
                   });
                   
                 }
               
 }
 
-async function actionlist(flagforupdate)
+async function getactiondetails(flagforupdate)
 {
   $("#tblForaction").show();
   var requestactiondata = {}; 
@@ -517,23 +575,21 @@ async function actionlist(flagforupdate)
     //ReferenceNumber :strRefnumber,
     Filename:$("#file-upload")[0].files[0].name,
     FileContent:$("#file-upload")[0].files[0],
+    Title:$("#txttitle").val(),
     Comments:$("#txtcmd").val(),
     AssignedToEmail:$("#actionassignee option:selected").val(),
     AssigneeName:$("#actionassignee option:selected").attr("data-name"),
     DueDate:$("#datedue").val()
   }
-
-
- 
   actiondetails.push(requestactiondata);
 }
-
   console.log(actiondetails);
 
   $('#txtcmd').val("");
+  $('#txttitle').val("");
   $('#file-upload').val("");
   $(".custom-file-upload").text('Upload File');
-  $('#datedue').val(htmlfordate);
+  $('#datedue').val(moment().format("YYYY-MM-DD"));
 
   var htmlforaction="";
   for(var i=0;i<actiondetails.length;i++)
@@ -545,7 +601,7 @@ async function actionlist(flagforupdate)
     else
     Ddate="NA";
               
-                  htmlforaction += `<tr><td>${actiondetails[i].Filename}</td><td>${actiondetails[i].Comments}</td><td>${actiondetails[i].AssigneeName}</td><td>${moment(actiondetails[i].DueDate).format("DD-MM-YYYY")}</td><td><a href="#"><span class="icon-edit" data-index=${i}></span></a></td></tr>`; 
+                  htmlforaction += `<tr><td>${actiondetails[i].Filename}</td><td>${actiondetails[i].Title}</td><td>${actiondetails[i].Comments}</td><td>${actiondetails[i].AssigneeName}</td><td>${moment(actiondetails[i].DueDate).format("DD-MM-YYYY")}</td><td><a href="#"><span class="icon-edit" data-index=${i}></span></a></td></tr>`; 
               }
 
               $("#tbodyForactionDetails").html('');
@@ -553,14 +609,14 @@ async function actionlist(flagforupdate)
               $(".loader").hide();
 }
 
-async function actionlistdetails(RefNum)
+async function Insertactiondetails(RefNum)
               {
             var count=0;
                 for(var i=0;i<actiondetails.length;i++)
             {
               await sp.web.lists
               .getByTitle("JobAction")
-              .items.add({"ReferenceNumber":RefNum,"Filename":actiondetails[i].Filename,"Comments":actiondetails[i].Comments,"AssignedToEmail":actiondetails[i].AssignedToEmail,"AssigneeName":actiondetails[i].AssigneeName,"DueDate":actiondetails[i].DueDate})
+              .items.add({"ReferenceNumber":RefNum,"Filename":actiondetails[i].Filename,"Title":actiondetails[i].Title,"Comments":actiondetails[i].Comments,"AssignedToEmail":actiondetails[i].AssignedToEmail,"AssigneeName":actiondetails[i].AssigneeName,"DueDate":actiondetails[i].DueDate})
               .then(async function (data) 
               {
                 count++;
@@ -569,12 +625,13 @@ async function actionlistdetails(RefNum)
                 await Item.attachmentFiles.add(actiondetails[i].Filename, actiondetails[i].FileContent);
                 if(count==actiondetails.length)
                 {
+                  $(".loader").hide();
                   AlertMessage("Record created successfully");
                 }
                 
               })
               .catch(function (error) {
-                ErrorCallBack(error, "insert JobAction");
+                ErrorCallBack(error, "getactiondetails");
               });
             }
               }
@@ -584,6 +641,7 @@ function editactiondetails(editdata)
 
   //$("#file-upload").files[0].name.val(actiondetails[editdata].FileContent);
   $('.custom-file-upload').text(actiondetails[editdata].Filename);
+  $("#txttitle").val(actiondetails[editdata].Title);
   $("#txtcmd").val(actiondetails[editdata].Comments);
   //$("#actionassignee").val(actiondetails[editdata].AssigneeName);
   $("#actionassignee").val(actiondetails[editdata].AssignedToEmail);
@@ -631,6 +689,7 @@ function AlertMessage(strMewssageEN) {
 
 function disableallfields()
 {
+  $("#txtNode").prop('disabled',true);
   $("#txtSiteName").prop('disabled',true);
   $("#txtSiteType").prop('disabled',true);
   $("#txtClient").prop('disabled',true);
@@ -674,9 +733,9 @@ function mandatoryforaddaction()
         isAllvalueFilled=false;
         
       }
-      else if(!$("#txtcmd").val())
+      else if(!$("#txttitle").val())
       {
-        alertify.error("Please enter comments");
+        alertify.error("Please enter title");
         isAllvalueFilled=false;
         
       }
