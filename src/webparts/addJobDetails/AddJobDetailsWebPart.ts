@@ -224,9 +224,21 @@ $("#generateFields").click(async function()
 
 $("#drpCategory").change(async function()
 {
+  $(".loader").show();
+  if($("#drpCategory option:selected").val()=="Select"){
+    $('.loader').hide();
+    $(".divsitedetails").hide();
+    $(".divProjectdetails").hide();
+    $("#tblForTasks").hide();
+    $("#btnsubmit").hide();
+    $(".Actiondetails").hide();
+  }
+  else{
 var Siteid='';
 Siteid=$("#drpCategory option:selected").attr("data-id");
+
 await getSiteDetails(Siteid);
+}
 });
 
 $("#btnsubmit").click(async function()
@@ -342,12 +354,18 @@ function test()
 }
 async function getIscheduledetails(NodeID)
 {
+              $(".divsitedetails").hide();
+              $(".divProjectdetails").hide();
+              $("#tblForTasks").hide();
+              $("#btnsubmit").hide();
+              $(".Actiondetails").hide();
   await sp.web.lists.getByTitle("SiteMasterList").items.select("*").filter("NodeID eq '"+NodeID+"'").get().then(async (item)=>
   { 
     var htmlforCategory="";
     if(item.length > 0)
     {
       htmlforCategory=`<option>Select</option>`;
+  
     for(var i=0;i<item.length;i++)
     {
     
@@ -675,13 +693,14 @@ function AlertMessage(strMewssageEN) {
     .alert()
     .setting({
       label: "OK",
-
+      
       message: strMewssageEN,
 
       onok: function () {
         window.location.href = "#";
       },
     })
+    
     .show()
     .setHeader("<em>Confirmation</em> ")
     .set("closable", false);

@@ -44,8 +44,10 @@ var Itemid;
 var taskdetails=[];
 var tval='';
 var YesChecked="Yes";
+var FilteredManager = [];
+var currentuser = "";
 
-
+var flagmangerornot=false;
 var siteURL="";
 
 export interface IViewJobDetailsWebPartProps {
@@ -65,6 +67,8 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
   public render(): void {
     that=this;
     siteURL=this.context.pageContext.web.absoluteUrl;
+    currentuser = this.context.pageContext.user.email;
+    console.log(currentuser);
     this.domElement.innerHTML = `
     <span style="display:none" class="loader">
 <img class="loader-spin"/>
@@ -189,7 +193,9 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
 `;
 $(".loader").show();
 Itemid = getUrlParameter("Itemid");
-getIschedulejobList(Itemid);
+getmanagerfromsite();
+
+
 
 $(document).on('click','#btnClose',function()
 {
@@ -263,7 +269,7 @@ async function getIschedulejobList(Itemid)
           } else{
             
                 html+="<li>"+tval+"</li>";
-                await getIscheduletaskList(tval);
+                await getIscheduletaskList(val[i]);
           }
               var htmlfortask='';
               var isChecked  ="checked";
@@ -274,8 +280,11 @@ async function getIschedulejobList(Itemid)
                 // isChecked  ="";
                 // else
                 // isChecked  ="checked";
+                if(flagmangerornot||currentuser==taskdetails[i].AssignedToEmail)
+                {
                 htmlfortask += `<tr><td>${taskdetails[i].Project}</td><td>${taskdetails[i].TaskName}</td><td>${taskdetails[i].AssigneeName}</td><td>${taskdetails[i].DueDate}</td><td><a href="#"><span class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" id="icon-view" data-index=${i}></span></a></td></tr>`;
                 //<td><input type="checkbox" ${isChecked} class="clsactive" data-index=${i}></td>
+              }
               }
 
           $("#selectedProjects").html('');
@@ -309,7 +318,7 @@ async function getIscheduletaskList(Projects)
           //taskdetails.push(item);
           for(var i=0;i<item.length;i++)
           {
-          taskdetails.push({"Project":item[i].Project,"Priority":item[i].Priority,"TaskName":item[i].TaskName,"AssigneeName":item[i].AssigneeName,"DueDate": moment(item[i].DueDate).format("DD-MM-YYYY"),/*"Active":item[i].Active,*/"Startdate": moment(item[i].Startdate).format("DD-MM-YYYY"),"EndDate": moment(item[i].EndDate).format("DD-MM-YYYY"),"HoldStartDate": moment(item[i].HoldStartDate).format("DD-MM-YYYY"),"HoldEndDate": moment(item[i].HoldEndDate).format("DD-MM-YYYY"),"CompletionDate": moment(item[i].CompletionDate).format("DD-MM-YYYY")});
+          taskdetails.push({"Project":item[i].Project,"Priority":item[i].Priority,"TaskName":item[i].TaskName,"AssigneeName":item[i].AssigneeName,"AssignedToEmail":item[i].AssignedToEmail,"DueDate": moment(item[i].DueDate).format("DD-MM-YYYY"),/*"Active":item[i].Active,*/"Startdate": moment(item[i].Startdate).format("DD-MM-YYYY"),"EndDate": moment(item[i].EndDate).format("DD-MM-YYYY"),"HoldStartDate": moment(item[i].HoldStartDate).format("DD-MM-YYYY"),"HoldEndDate": moment(item[i].HoldEndDate).format("DD-MM-YYYY"),"CompletionDate": moment(item[i].CompletionDate).format("DD-MM-YYYY")});
         }
         getJobAction();
       }
@@ -323,7 +332,7 @@ async function getIscheduletaskList(Projects)
 async function getJobAction()
 {
   var htmlforaction='';
-  await sp.web.lists.getByTitle("JobAction").items.select("*").filter("ReferenceNumber eq '"+Itemid+"'").get().then(async (item)=>
+  await sp.web.lists.getByTitle("JobAction").items.select("*").filter("ReferenceNumber eq '"+Itemid+"' and Active eq '"+YesChecked+"'").get().then(async (item)=>
   {
       if(item.length>0)
       {
@@ -335,7 +344,10 @@ async function getJobAction()
             const itemval = await sp.web.lists.getByTitle("JobAction").items.getById(Refnum);
             const Info = await itemval.attachmentFiles();
             console.log(Info); 
+            if(flagmangerornot||currentuser==item[i].AssignedToEmail)
+            {
             htmlforaction += `<tr><td><a href="${Info[0].ServerRelativeUrl}" target="_blank">${item[i].Filename}</a></td><td>${item[i].Title}</td><td>${item[i].Comments}</td><td>${item[i].AssigneeName}</td><td>${moment(item[i].DueDate).format("DD-MM-YYYY")}</td><td>${item[i].Status}</td></tr>`; 
+            }
         }
         $("#tbodyForactionDetails").html('');
         $("#tbodyForactionDetails").html(htmlforaction);
@@ -393,6 +405,26 @@ $("#selectedtaskdetails").html(htmlfortaskdetails);
 $('.loader').hide();
 }
 
+async function getmanagerfromsite() {
+  var ManagerInfo = [];
+  await sp.web.siteGroups
+    .getByName("ITimeSheetManagers")
+    .users.get()
+    .then(function (result) {
+      for (var i = 0; i < result.length; i++) 
+      {
+        
+          if(result[i].Email == currentuser)
+          {
+            flagmangerornot=true;
+          }
+      }
+      getIschedulejobList(Itemid);
+    })
+    .catch(function (err) {
+      alert("Group not found: " + err);
+    });
+}
 async function ErrorCallBack(error, methodname) 
 {
   try {
