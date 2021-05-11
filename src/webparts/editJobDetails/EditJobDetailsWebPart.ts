@@ -39,6 +39,8 @@ var options='';
 var Itemid;
 var taskdetails=[];
 var actiondetails=[];
+var FilteredManager =[];
+var currentuser = "";
 var tval='';
 
 export interface IEditJobDetailsWebPartProps {
@@ -58,6 +60,7 @@ export default class EditJobDetailsWebPart extends BaseClientSideWebPart <IEditJ
 
   public render(): void {
     that=this;
+    currentuser = this.context.pageContext.user.email;
     siteURL=this.context.pageContext.web.absoluteUrl;
     this.domElement.innerHTML = `
     <span style="display:none" class="loader">
@@ -277,7 +280,7 @@ $("#btnUpdate").click(async function()
     }
 });
 
-getusersfromsite();
+getmanagerfromsite();
   }
 
   protected get dataVersion(): Version {
@@ -307,6 +310,33 @@ getusersfromsite();
 }
 }
 
+async function getmanagerfromsite() {
+  var ManagerInfo = [];
+  await sp.web.siteGroups
+    .getByName("ITimeSheetManagers")
+    .users.get()
+    .then(function (result) {
+      for (var i = 0; i < result.length; i++) {
+        ManagerInfo.push({
+          Title: result[i].Title,
+          ID: result[i].Id,
+          Email: result[i].Email,
+        });
+      }
+      FilteredManager = ManagerInfo.filter((manager)=>{return (manager.Email == currentuser)});
+      console.log(FilteredManager);
+        if (FilteredManager.length>0) 
+        {
+          getusersfromsite();
+        } 
+        else{
+          ErrorCallBack("Data Not Found","getmanagerfromsite")
+        }
+    })
+    .catch(function (err) {
+      alert("Group not found: " + err);
+    });
+}
 async function getusersfromsite()
 {
   await that.context.msGraphClientFactory.getClient().then( async client => {

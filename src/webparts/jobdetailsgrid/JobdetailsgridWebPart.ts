@@ -1,15 +1,13 @@
-import { Version } from '@microsoft/sp-core-library';
+import { Version } from "@microsoft/sp-core-library";
 import {
   IPropertyPaneConfiguration,
-  PropertyPaneTextField
-} from '@microsoft/sp-property-pane';
-import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
-import { escape } from '@microsoft/sp-lodash-subset';
+  PropertyPaneTextField,
+} from "@microsoft/sp-property-pane";
+import { BaseClientSideWebPart } from "@microsoft/sp-webpart-base";
+import { escape } from "@microsoft/sp-lodash-subset";
 
-import styles from './JobdetailsgridWebPart.module.scss';
-import * as strings from 'JobdetailsgridWebPartStrings';
-
-
+import styles from "./JobdetailsgridWebPart.module.scss";
+import * as strings from "JobdetailsgridWebPartStrings";
 
 import { sp } from "@pnp/sp/presets/all";
 import "jquery";
@@ -27,24 +25,27 @@ SPComponentLoader.loadCss(
   "https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css"
 );
 
-var siteURL="";
+var siteURL = "";
+var FilteredManager =[];
+var currentuser = "";
+var YesChecked="Yes";
+var TaskRefId=[];
 
 export interface IJobdetailsgridWebPartProps {
   description: string;
 }
 
-
 export default class JobdetailsgridWebPart extends BaseClientSideWebPart<IJobdetailsgridWebPartProps> {
   public onInit(): Promise<void> {
     return super.onInit().then(() => {
       sp.setup({
-         spfxContext: this.context
-         });
-
+        spfxContext: this.context,
+      });
     });
   }
   public render(): void {
-    siteURL=this.context.pageContext.web.absoluteUrl;
+    currentuser = this.context.pageContext.user.email;
+    siteURL = this.context.pageContext.web.absoluteUrl;
     this.domElement.innerHTML = `
     <span style="display:none" class="loader">
 <img class="loader-spin"/>
@@ -87,27 +88,27 @@ export default class JobdetailsgridWebPart extends BaseClientSideWebPart<IJobdet
     </tbody>
   </table>
      </div>`;
-    $('.loader').show();
-     getIScheduleJoblist();
-
-$("#btnCreate").click(function()
-{
-  location.href=`${siteURL}/SitePages/AddJob.aspx`;
-
-});
-     $(document).on('click','.viewjob',function()
-     {
-          location.href=`${siteURL}/SitePages/ViewJob.aspx?Itemid=${$(this).attr('data-id')}`;
-     });
-     $(document).on('click','.editjob',function()
-     {
-          location.href=`${siteURL}/SitePages/EditJob.aspx?Itemid=${$(this).attr('data-id')}`;
-     });
-    }
+    $(".loader").show();
+    getIscheduletaskList();
     
 
+    $("#btnCreate").click(function () {
+      location.href = `${siteURL}/SitePages/AddJob.aspx`;
+    });
+    $(document).on("click", ".viewjob", function () {
+      location.href = `${siteURL}/SitePages/ViewJob.aspx?Itemid=${$(this).attr(
+        "data-id"
+      )}`;
+    });
+    $(document).on("click", ".editjob", function () {
+      location.href = `${siteURL}/SitePages/EditJob.aspx?Itemid=${$(this).attr(
+        "data-id"
+      )}`;
+    });
+  }
+
   protected get dataVersion(): Version {
-    return Version.parse('1.0');
+    return Version.parse("1.0");
   }
 
   protected getPropertyPaneConfiguration(): IPropertyPaneConfiguration {
@@ -115,59 +116,152 @@ $("#btnCreate").click(function()
       pages: [
         {
           header: {
-            description: strings.PropertyPaneDescription
+            description: strings.PropertyPaneDescription,
           },
           groups: [
             {
               groupName: strings.BasicGroupName,
               groupFields: [
-                PropertyPaneTextField('description', {
-                  label: strings.DescriptionFieldLabel
-                })
-              ]
-            }
-          ]
-        }
-      ]
-    }; 
+                PropertyPaneTextField("description", {
+                  label: strings.DescriptionFieldLabel,
+                }),
+              ],
+            },
+          ],
+        },
+      ],
+    };
   }
 }
-async function getIScheduleJoblist(){
-  var html ="";
-  var htmldata = "";
-  
-  
-  
-  await sp.web.lists.getByTitle("IscheduleJobList").items.get().then((items: any[]) => {
-    // console.log(items);
-    for (var i=0; i<items.length; i++)
-    {
-     var element = items[i].Projects.split(";");
-     console.log(element);
-     if(element.length > 1){
-      for(var j = 0; j < element.length - 1;j++){
-        console.log(htmldata)
-        htmldata +=  `<div> ${element[j]}</div>`;
+
+async function getmanagerfromsite() {
+  var ManagerInfo = [];
+  await sp.web.siteGroups
+    .getByName("ITimeSheetManagers")
+    .users.get()
+    .then(function (result) {
+      for (var i = 0; i < result.length; i++) {
+        ManagerInfo.push({
+          Title: result[i].Title,
+          ID: result[i].Id,
+          Email: result[i].Email,
+        });
       }
-     }
-     else{
-      htmldata = items[i].Projects
-    }
-    
-      html += `<tr><td>${i+1}</td><td>${items[i].Client}</td><td>${items[i].SiteName}<td>${items[i].NodeID}</td>${htmldata}<td>${items[i].SiteType}<td>${htmldata}</td> <td>${items[i].VersionID}</td><td><a href="#" class="viewjob" data-id=${items[i].ID}><span class="icon-img icon-view"></a><a href="#" class="editjob" data-id=${items[i].ID}><span class="icon-img icon-edit"></a></td></tr>`
-
-    }
-    $("#IScheduleJoblist").html("");
-    $("#IScheduleJoblist").html(html);
-    $("#tableForIScheduleJoblist").DataTable();
-
-    $('.loader').hide();
-})
-.catch(function (error) {
-  ErrorCallBack(error, "getIScheduleJoblist");
-});
+      FilteredManager = ManagerInfo.filter((manager)=>{return (manager.Email == currentuser)});
+      console.log(FilteredManager);
+        if (FilteredManager.length>0) 
+        {
+          getIScheduleJoblist(true);
+        } else {
+          getIScheduleJoblist(false);
+        }
+    })
+    .catch(function (err) {
+      alert("Group not found: " + err);
+    });
 }
 
+async function getIScheduleJoblist(flag) {
+  var html = "";
+  
+ 
+    await sp.web.lists
+      .getByTitle("IscheduleJobList")
+      .items.get()
+      .then((items: any[]) => {
+        for (var i = 0; i < items.length; i++) 
+        {
+ 
+          var element = items[i].Projects.split(";");
+
+          var htmldata = "";
+          if (element.length > 1) {
+            for (var j = 0; j < element.length - 1; j++) {
+              console.log(htmldata);
+              htmldata += `<div> ${element[j]}</div>`;
+            }
+          } else {
+            htmldata = items[i].Projects;
+          }
+          if(flag)
+          {
+            html += `<tr><td>${i + 1}</td><td>${items[i].Client}</td><td>${
+              items[i].SiteName
+            }<td>${items[i].NodeID}</td>${htmldata}<td>${
+              items[i].SiteType
+            }<td>${htmldata}</td> <td>${
+              items[i].VersionID
+            }</td><td><a href="#" class="viewjob" data-id=${
+              items[i].ID
+            }><span class="icon-img icon-view"></a><a href="#" class="editjob" data-id=${
+              items[i].ID
+            }><span class="icon-img icon-edit"></a></td></tr>`;
+          }
+          else
+          {
+            $("#btnCreate").hide();
+            for(var j=0;j<TaskRefId.length;j++)
+            {
+              if(items[i].ID==TaskRefId[j].ReferenceNumber)
+              {
+            html += `<tr><td>${i + 1}</td><td>${items[i].Client}</td><td>${
+              items[i].SiteName
+            }<td>${items[i].NodeID}</td>${htmldata}<td>${
+              items[i].SiteType
+            }<td>${htmldata}</td> <td>${
+              items[i].VersionID
+            }</td><td><a href="#" class="viewjob" data-id=${
+              items[i].ID
+            }><span class="icon-img icon-view"></a></td></tr>`;
+              }
+            }
+          }
+        }
+        $("#IScheduleJoblist").html("");
+        $("#IScheduleJoblist").html(html);
+        $("#tableForIScheduleJoblist").DataTable();
+        $(".loader").hide();
+        
+      })
+      .catch(function (error) {
+        ErrorCallBack(error, "getIScheduleJoblist");
+      });
+  
+}
+
+async function getIscheduletaskList()
+{
+  await sp.web.lists.getByTitle("IscheduletaskList").items.select("*").filter("Active eq '"+YesChecked+"'").get().then(async (item)=>
+  {
+      var ItemInfo=[];
+      if(item.length>0)
+      {
+          for(var i=0; i<item.length; i++)
+          {
+            if(currentuser==item[i].AssignedToEmail)
+                {
+                  ItemInfo.push({"ReferenceNumber":item[i].ReferenceNumber,"AssigneeName":item[i].AssigneeName,"AssignedToEmail":item[i].AssignedToEmail});
+              }
+          }
+
+          TaskRefId = ItemInfo.reduce(function (item, e1) {  
+            var matches = item.filter(function (e2)  
+            { return e1.ReferenceNumber == e2.ReferenceNumber});  
+            if (matches.length == 0) {  
+                item.push(e1);  
+            }  
+            return item;  
+        }, []);  
+        console.log(TaskRefId);
+        getmanagerfromsite();
+      
+      }
+      
+  }).catch((error)=>
+  {
+    ErrorCallBack(error, "getIscheduletaskList");
+  });
+}
 /* This is place for common  functionalities start*/
 
 async function ErrorCallBack(error, methodname) {
