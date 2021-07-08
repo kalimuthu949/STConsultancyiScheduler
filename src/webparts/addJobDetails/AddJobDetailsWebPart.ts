@@ -140,7 +140,7 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
   </thead>
   <tbody id="tbodyForTaskDetails">
   <tr>
-    <td> </td>
+  <td colspan="5">No Tasks</td>
   </tr>
   </tbody>
 </table>
@@ -193,7 +193,7 @@ export default class AddJobDetailsWebPart extends BaseClientSideWebPart <IAddJob
         </thead>
         <tbody id="tbodyForactionDetails">
         <tr>
-          <td> </td>
+        <td colspan="6">No Actions</td>
         </tr>
         </tbody>
       </table>
@@ -697,7 +697,7 @@ function AlertMessage(strMewssageEN) {
       message: strMewssageEN,
 
       onok: function () {
-        window.location.href = "#";
+        window.location.href = siteURL+"/SitePages/JobDetails.aspx";
       },
     })
     

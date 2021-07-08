@@ -15,6 +15,7 @@ import "../../ExternalRef/css/jobdetailsgrid.css";
 import "../../ExternalRef/css/loader.css";
 var alertify: any = require("../../ExternalRef/js/alertify.min.js");
 
+
 declare var $;
 
 import "../../../node_modules/datatables/media/js/jquery.dataTables.min.js";
@@ -163,8 +164,6 @@ async function getmanagerfromsite() {
 
 async function getIScheduleJoblist(flag) {
   var html = "";
-  
- 
     await sp.web.lists
       .getByTitle("IscheduleJobList")
       .items.get()
@@ -231,7 +230,7 @@ async function getIScheduleJoblist(flag) {
 
 async function getIscheduletaskList()
 {
-  await sp.web.lists.getByTitle("IscheduletaskList").items.select("*").filter("Active eq '"+YesChecked+"'").get().then(async (item)=>
+  await sp.web.lists.getByTitle("IscheduletaskList").items.select("*").filter("Active eq '"+YesChecked+"' and AssignedToEmail eq '"+currentuser+"'").top(5000).get().then(async (item)=>
   {
       var ItemInfo=[];
       if(item.length>0)
@@ -252,10 +251,11 @@ async function getIscheduletaskList()
             }  
             return item;  
         }, []);  
-        console.log(TaskRefId);
-        getmanagerfromsite();
+        
       
       }
+
+      getmanagerfromsite();
       
   }).catch((error)=>
   {
@@ -280,6 +280,7 @@ function AlertMessage(Message) {
       onok: function () {
         // window.location.href = siteURL + "/SitePages/ConfigurationGrid.aspx";
         //window.location.href = "#";
+        window.location.href = siteURL+"/SitePages/JobDetails.aspx";
       },
     })
     .show()

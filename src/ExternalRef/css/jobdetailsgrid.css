@@ -37,7 +37,7 @@ tr {
 .container .icon-img.icon-edit {
   background-image: url("../../ExternalRef/images/icon-pencil.png");
 }
-a {
+.container a {
   padding: 10px;
 }
 /* overright css */

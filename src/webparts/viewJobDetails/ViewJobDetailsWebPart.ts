@@ -137,7 +137,7 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
   </thead>
   <tbody id="tbodyForTaskDetails">
   <tr>
-    <td> </td>
+  <td colspan="5">No Tasks</td>
   </tr>
   </tbody>
 </table>
@@ -180,8 +180,8 @@ export default class ViewJobDetailsWebPart extends BaseClientSideWebPart <IViewJ
         </thead>
         <tbody id="tbodyForactionDetails">
         <tr>
-          <td> </td>
-        </tr>
+        <td colspan="6">No Actions</td>
+      </tr>
         </tbody>
       </table>
       </div>
