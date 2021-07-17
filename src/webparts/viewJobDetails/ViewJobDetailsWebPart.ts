@@ -242,7 +242,7 @@ console.log(viewdata);
 
 async function getIschedulejobList(Itemid)
 {
-  await sp.web.lists.getByTitle("IscheduleJobList").items.select("*").filter("ID eq '"+Itemid+"'").get().then(async (item)=>
+  await sp.web.lists.getByTitle("SiteMasterList").items.select("*").filter("ID eq '"+Itemid+"'").get().then(async (item)=>
   {
     taskdetails=[];
     if(item.length > 0)
@@ -254,10 +254,12 @@ async function getIschedulejobList(Itemid)
         $("#txtVersion").val(item[0].VersionID);
         $("#txtClient").val(item[0].Client);
         //$("#selectedProjects").val(item[0].Projects);
-        if(item[0].Projects)
+        ///if(item[0].Projects)
+        if(item[0].Category)
         {
             var html='';
-            tval=item[0].Projects;
+            ///tval=item[0].Projects;
+            tval=item[0].Category;
             var val=tval.split(";");
             if(val.length>1)
             {
@@ -293,6 +295,9 @@ async function getIschedulejobList(Itemid)
           $("#tbodyForTaskDetails").html('');
           $("#tbodyForTaskDetails").html(htmlfortask);
 
+          if(!htmlfortask)
+          $("#tbodyForTaskDetails").html(`<tr><td colspan="5">No Tasks</td></tr>`);
+
           disableallfields();
 
           $('.loader').hide();
@@ -320,6 +325,10 @@ async function getIscheduletaskList(Projects)
           {
           taskdetails.push({"Project":item[i].Project,"Priority":item[i].Priority,"TaskName":item[i].TaskName,"AssigneeName":item[i].AssigneeName,"AssignedToEmail":item[i].AssignedToEmail,"DueDate": moment(item[i].DueDate).format("DD-MM-YYYY"),/*"Active":item[i].Active,*/"Startdate": moment(item[i].Startdate).format("DD-MM-YYYY"),"EndDate": moment(item[i].EndDate).format("DD-MM-YYYY"),"HoldStartDate": moment(item[i].HoldStartDate).format("DD-MM-YYYY"),"HoldEndDate": moment(item[i].HoldEndDate).format("DD-MM-YYYY"),"CompletionDate": moment(item[i].CompletionDate).format("DD-MM-YYYY")});
         }
+        getJobAction();
+      }
+      else
+      {
         getJobAction();
       }
       

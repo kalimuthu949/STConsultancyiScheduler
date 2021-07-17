@@ -53,7 +53,7 @@ export default class JobdetailsgridWebPart extends BaseClientSideWebPart<IJobdet
 </span>
      <div class=container>
   <div class="btntext text-end py-2">
-    <button class="btn  buttoncolor" id="btnCreate" type="submit">Create</button>
+    <button class="btn  buttoncolor" id="btnCreate" type="submit" style="display:none">Create</button>
   </div>
 
      <table class="table table-bordered" id="tableForIScheduleJoblist">
@@ -165,13 +165,14 @@ async function getmanagerfromsite() {
 async function getIScheduleJoblist(flag) {
   var html = "";
     await sp.web.lists
-      .getByTitle("IscheduleJobList")
-      .items.get()
+      .getByTitle("SiteMasterList")
+      .items.top(5000).get()
       .then((items: any[]) => {
         for (var i = 0; i < items.length; i++) 
         {
  
-          var element = items[i].Projects.split(";");
+          ///var element = items[i].Projects.split(";");
+          var element = items[i].Category.split(";");
 
           var htmldata = "";
           if (element.length > 1) {
@@ -180,7 +181,8 @@ async function getIScheduleJoblist(flag) {
               htmldata += `<div> ${element[j]}</div>`;
             }
           } else {
-            htmldata = items[i].Projects;
+            ///htmldata = items[i].Projects;
+            htmldata = items[i].Category;
           }
           if(flag)
           {

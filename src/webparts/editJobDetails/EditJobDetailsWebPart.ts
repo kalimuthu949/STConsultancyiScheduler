@@ -182,7 +182,7 @@ export default class EditJobDetailsWebPart extends BaseClientSideWebPart <IEditJ
         </thead>
         <tbody id="tbodyForactionDetails">
         <tr>
-        <td colspan="6">No Actions</td>
+        <td colspan="8">No Actions</td>
         </tr>
         </tbody>
       </table>
@@ -361,7 +361,7 @@ async function getusersfromsite()
 async function getIschedulejobList(Itemid)
 {
   $(".loader").show();
-  await sp.web.lists.getByTitle("IscheduleJobList").items.select("*").filter("ID eq '"+Itemid+"'").get().then(async (item)=>
+  await sp.web.lists.getByTitle("SiteMasterList").items.select("*").filter("ID eq '"+Itemid+"'").get().then(async (item)=>
   {
     taskdetails=[];
 
@@ -374,10 +374,12 @@ async function getIschedulejobList(Itemid)
         $("#txtVersion").val(item[0].VersionID);
         $("#txtClient").val(item[0].Client);
         //$("#selectedProjects").val(item[0].Projects);
-        if(item[0].Projects)
+        ///if(item[0].Projects)
+        if(item[0].Category)
         {
             var html='';
-            tval=item[0].Projects;
+            ///tval=item[0].Projects;
+            tval=item[0].Category;
             var val=tval.split(";");
             if(val.length>1)
             {
@@ -416,6 +418,9 @@ async function getIschedulejobList(Itemid)
 
           $("#tbodyForTaskDetails").html('');
           $("#tbodyForTaskDetails").html(htmlfortask);
+
+          if(!htmlfortask)
+          $("#tbodyForTaskDetails").html(`<tr><td colspan="5">No Tasks</td></tr>`);
 
           disableallfields();
           
@@ -461,6 +466,10 @@ async function getIscheduletaskList(Projects)
           {
           taskdetails.push({"Project":item[i].Project,"Priority":item[i].Priority,"ID":item[i].ID,"TaskName":item[i].TaskName,"AssigneeName":item[i].AssigneeName,"AssignedToEmail":item[i].AssignedToEmail,"DueDate": moment(item[i].DueDate).format("YYYY-MM-DD"),"Active":item[i].Active});
         }
+        getJobAction();
+      }
+      else
+      {
         getJobAction();
       }
       
@@ -695,42 +704,56 @@ async function UpdateIscheduleLists() {
       taskdetails[$(this).attr('data-index')].AssigneeName=$(this).find("option:selected").attr("data-name");
   });
 
-    var count=1;
+    var count=0;
     var requesttaskdata = {};
-                for(var i=0;i<taskdetails.length;i++)
-                {
-                  var Id=taskdetails[i].ID;
-                  requesttaskdata = {
-                      DueDate: taskdetails[i].DueDate,
-                      Active: taskdetails[i].Active,
-                      AssignedToEmail: taskdetails[i].AssignedToEmail,
-                      AssigneeName: taskdetails[i].AssigneeName
-                    };
-                    await sp.web.lists
-                      .getByTitle("ischeduletasklist")
-                       .items.getById(Id)
-                       .update(requesttaskdata).then(function (data) {
-                      count++;
-  
-                      if(count==taskdetails.length)
-                      {
-                        
-                        //AlertMessage("Job Updated successfully");
-                        if(actiondetails.length>0)
-                        Insertactiondetails(Itemid);
-                        else{
-                          $(".loader").hide();
-                          AlertMessage("Record Updated successfully");
-                        }
-                        
-                      }
-                      
-                    })
-                    .catch(function (error) {
-                      ErrorCallBack(error, "UpdateIscheduleLists");
-                    });
-                    
-                  }
+
+    if(taskdetails.length>0)
+    {
+      for(var i=0;i<taskdetails.length;i++)
+      {
+        var Id=taskdetails[i].ID;
+        requesttaskdata = {
+            DueDate: taskdetails[i].DueDate,
+            Active: taskdetails[i].Active,
+            AssignedToEmail: taskdetails[i].AssignedToEmail,
+            AssigneeName: taskdetails[i].AssigneeName
+          };
+          await sp.web.lists
+            .getByTitle("ischeduletasklist")
+             .items.getById(Id)
+             .update(requesttaskdata).then(function (data) {
+            count++;
+
+            if(count==taskdetails.length)
+            {
+              
+              //AlertMessage("Job Updated successfully");
+              if(actiondetails.length>0)
+              Insertactiondetails(Itemid);
+              else{
+                $(".loader").hide();
+                AlertMessage("Record Updated successfully");
+              }
+              
+            }
+            
+          })
+          .catch(function (error) {
+            ErrorCallBack(error, "UpdateIscheduleLists");
+          });
+          
+        }
+    }
+    else
+    {
+              if(actiondetails.length>0)
+              Insertactiondetails(Itemid);
+              else{
+                $(".loader").hide();
+                AlertMessage("Record Updated successfully");
+              }
+    }
+                
                 
   }
 
